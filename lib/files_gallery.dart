@@ -3,6 +3,7 @@ library files_gallery;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class Gallery extends StatelessWidget {
   final List<ImageProvider> images;
@@ -37,7 +38,8 @@ class Gallery extends StatelessWidget {
                 children: images
                     .map(
                       (image) => Container(
-                        child: Image(
+                        child: FadeInImage(
+                          placeholder: Image.memory(kTransparentImage).image,
                           image: image,
                           height: borderSize,
                           width: borderSize,
