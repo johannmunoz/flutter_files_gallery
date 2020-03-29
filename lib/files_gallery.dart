@@ -2,18 +2,19 @@ library files_gallery;
 
 import 'dart:io';
 
+import 'package:files_gallery/full_screen_file.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class Gallery extends StatelessWidget {
   final List<ImageProvider> images;
-  final VoidCallback onDeleteImage;
+  final OnRemoveFile onDeleteFile;
 
-  Gallery.file(List<File> files, {Key key, this.onDeleteImage})
+  Gallery.file(List<File> files, {Key key, this.onDeleteFile})
       : images = files.map((file) => FileImage(file)).toList(),
         super(key: key);
 
-  Gallery.network(List<String> urls, {Key key, this.onDeleteImage})
+  Gallery.network(List<String> urls, {Key key, this.onDeleteFile})
       : images = urls.map((url) => NetworkImage(url)).toList(),
         super(key: key);
 
@@ -36,17 +37,31 @@ class Gallery extends StatelessWidget {
                 direction: Axis.horizontal,
                 spacing: 2.0,
                 children: images
-                    .map(
-                      (image) => Container(
-                        child: FadeInImage(
-                          placeholder: Image.memory(kTransparentImage).image,
-                          image: image,
-                          height: borderSize,
-                          width: borderSize,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    )
+                    .asMap()
+                    .map((index, image) => MapEntry(
+                          index,
+                          GestureDetector(
+                            onLongPress: () => print('long press'),
+                            onTap: () =>
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => FullScreenFile(
+                                          image,
+                                          onDeleteImage: () =>
+                                              onDeleteFile(index),
+                                        ))),
+                            child: Container(
+                              child: FadeInImage(
+                                placeholder:
+                                    Image.memory(kTransparentImage).image,
+                                image: image,
+                                height: borderSize,
+                                width: borderSize,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ))
+                    .values
                     .toList(),
               ),
             ),
@@ -56,3 +71,5 @@ class Gallery extends StatelessWidget {
     );
   }
 }
+
+typedef void OnRemoveFile(int indexFile);

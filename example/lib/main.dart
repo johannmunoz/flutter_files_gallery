@@ -16,7 +16,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   final List<String> urls = [
     'https://homepages.cae.wisc.edu/~ece533/images/airplane.png',
     'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
@@ -25,6 +30,7 @@ class MyHomePage extends StatelessWidget {
     'https://homepages.cae.wisc.edu/~ece533/images/goldhill.png',
     'https://homepages.cae.wisc.edu/~ece533/images/mountain.png',
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +41,12 @@ class MyHomePage extends StatelessWidget {
         children: <Widget>[
           Container(
             color: Colors.blue,
-            child: Gallery.network(urls),
+            child: Gallery.network(
+              urls,
+              onDeleteFile: (index) {
+                setState(() => urls.removeAt(index));
+              },
+            ),
           ),
         ],
       ),
