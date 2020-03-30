@@ -5,10 +5,11 @@ author:
 homepage: https://github.com/resvu/flutter-files-gallery
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.3.0 <3.0.0"
 
 dependencies:
   transparent_image: ^1.0.0
+  flutter_svg: ^0.14.2
   flutter:
     sdk: flutter
 
@@ -17,3 +18,5 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  assets:
+    - assets/fileicons/
