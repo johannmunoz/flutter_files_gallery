@@ -1,5 +1,6 @@
-import 'package:files_gallery/files_gallery.dart';
 import 'package:flutter/material.dart';
+
+import 'package:files_gallery/files_gallery.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,13 +23,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<String> urls = [
-    'https://homepages.cae.wisc.edu/~ece533/images/airplane.png',
-    'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
-    'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
-    'https://homepages.cae.wisc.edu/~ece533/images/peppers.png',
-    'https://homepages.cae.wisc.edu/~ece533/images/goldhill.png',
-    'https://homepages.cae.wisc.edu/~ece533/images/mountain.png',
+  final List<FileItem> urls = [
+    FileItem(
+      id: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
+      fileicon: '/assets/fileicons/image.svg',
+      value: ValueItem(name: 'test-image.png'),
+    ),
+    FileItem(
+      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      fileicon: '/assets/fileicons/image.svg',
+      value: ValueItem(name: 'test-image-2.png'),
+    ),
+    // 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+    // 'https://homepages.cae.wisc.edu/~ece533/images/peppers.png',
+    // 'https://homepages.cae.wisc.edu/~ece533/images/goldhill.png',
+    // 'https://homepages.cae.wisc.edu/~ece533/images/mountain.png',
   ];
 
   @override
@@ -41,11 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           Container(
             color: Colors.blue,
-            child: Gallery.network(
-              urls,
-              onDeleteFile: (index) {
-                setState(() => urls.removeAt(index));
-              },
+            child: Gallery(
+              urls:
+                  urls.map((item) => '${item.id}+${item.value.name}').toList(),
+              onDeleteNetworkFile: (index) =>
+                  setState(() => urls.removeAt(index)),
             ),
           ),
         ],
@@ -53,3 +64,37 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+class FileItem {
+  String id;
+  String fileicon;
+  String imageurl;
+  String bucketPath;
+  ValueItem value;
+  FileItem({
+    this.id,
+    this.fileicon,
+    this.imageurl,
+    this.bucketPath,
+    this.value,
+  });
+}
+
+class ValueItem {
+  String name;
+  Props props;
+  ValueItem({
+    this.name,
+    this.props,
+  });
+}
+
+class Props {
+  bool completed;
+  int progress;
+  Props({
+    this.completed,
+    this.progress,
+  });
+}
+
