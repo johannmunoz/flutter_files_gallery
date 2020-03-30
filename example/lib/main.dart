@@ -36,6 +36,19 @@ class _MyHomePageState extends State<MyHomePage> {
       fileicon: '/assets/fileicons/image.svg',
       value: ValueItem(name: 'test-image-2.png'),
     ),
+    FileItem(
+      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      fileicon: 'assets/fileicons/pdf.svg',
+      value: ValueItem(name: 'test-image-3.pdf'),
+    ),
+    FileItem(
+      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      fileicon: 'assets/fileicons/doc.svg',
+      value: ValueItem(name: 'test-image-4.doc'),
+    ),
+
     // 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/peppers.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/goldhill.png',
@@ -51,7 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         children: <Widget>[
           Container(
-            color: Colors.blue,
             child: Gallery(
               urls:
                   urls.map((item) => '${item.id}+${item.value.name}').toList(),
@@ -97,4 +109,3 @@ class Props {
     this.progress,
   });
 }
-

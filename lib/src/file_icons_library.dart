@@ -1,9 +1,9 @@
 class FileIcons {
   static String getFileIcon(String fileExtension) {
     switch (fileExtension) {
-      case 'doc':
-      case 'docx':
-      case 'rtf':
+      case '.doc':
+      case '.docx':
+      case '.rtf':
         return '/assets/fileicons/word.svg';
         break;
       case '.pdf':

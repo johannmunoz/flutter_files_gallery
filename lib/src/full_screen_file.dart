@@ -22,6 +22,7 @@ class FullScreenFile extends StatelessWidget {
             Center(
               child: SvgPicture.asset(
                 fileicon,
+                package: 'files_gallery',
                 width: MediaQuery.of(context).size.shortestSide / 3,
                 fit: BoxFit.contain,
               ),
