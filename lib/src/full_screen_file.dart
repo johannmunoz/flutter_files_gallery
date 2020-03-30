@@ -1,32 +1,41 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class FullScreenFile extends StatelessWidget {
-  final ImageProvider image;
   final VoidCallback onDeleteImage;
+  final String filename;
+  final String fileicon;
 
-  FullScreenFile.file(File file, {Key key, this.onDeleteImage})
-      : image = FileImage(file),
-        super(key: key);
-
-  FullScreenFile.network(String src, {Key key, this.onDeleteImage})
-      : image = NetworkImage(src),
-        super(key: key);
-
-  const FullScreenFile(this.image, {Key key, this.onDeleteImage})
-      : super(key: key);
-
+  const FullScreenFile({
+    Key key,
+    this.onDeleteImage,
+    this.filename,
+    this.fileicon,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
             Center(
-              child: Image(
-                image: image,
+              child: SvgPicture.asset(
+                fileicon,
+                width: MediaQuery.of(context).size.shortestSide / 3,
+                fit: BoxFit.contain,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                width: double.infinity,
+                child: Text(
+                  filename,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.title,
+                ),
               ),
             ),
             Positioned(
@@ -94,4 +103,3 @@ class FullScreenFile extends StatelessWidget {
     );
   }
 }
-
