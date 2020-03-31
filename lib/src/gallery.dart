@@ -33,6 +33,28 @@ class Gallery extends StatelessWidget {
           borderSize = (boxConstraints.maxWidth / 4) - 2;
         }
 
+        List<Widget> listNetworkFiles = urls != null
+            ? urls
+                .asMap()
+                .map((index, galleryUrl) => MapEntry(
+                      index,
+                      _buildNetworkMap(context, galleryUrl, index, borderSize),
+                    ))
+                .values
+                .toList()
+            : [];
+
+        List<Widget> listMemoryFiles = files != null
+            ? files
+                .asMap()
+                .map((index, galleryFile) => MapEntry(
+                      index,
+                      _buildMemoryMap(context, galleryFile, index, borderSize),
+                    ))
+                .values
+                .toList()
+            : [];
+
         return Row(
           children: <Widget>[
             Flexible(
@@ -42,26 +64,8 @@ class Gallery extends StatelessWidget {
                 spacing: 2.0,
                 runSpacing: 2.0,
                 children: [
-                  if (files != null && files.isNotEmpty)
-                    ...files
-                        .asMap()
-                        .map((index, galleryFile) => MapEntry(
-                              index,
-                              _buildMemoryMap(
-                                  context, galleryFile, index, borderSize),
-                            ))
-                        .values
-                        .toList(),
-                  if (urls != null && urls.isNotEmpty)
-                    ...urls
-                        .asMap()
-                        .map((index, galleryUrl) => MapEntry(
-                              index,
-                              _buildNetworkMap(
-                                  context, galleryUrl, index, borderSize),
-                            ))
-                        .values
-                        .toList()
+                  ...listNetworkFiles,
+                  ...listMemoryFiles,
                 ],
               ),
             ),
