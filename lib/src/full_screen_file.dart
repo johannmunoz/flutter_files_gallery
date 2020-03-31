@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path/path.dart';
 
 class FullScreenFile extends StatelessWidget {
   final VoidCallback onDeleteImage;
@@ -21,7 +22,7 @@ class FullScreenFile extends StatelessWidget {
           children: [
             Center(
               child: SvgPicture.asset(
-                fileicon,
+                relative(fileicon),
                 package: 'files_gallery',
                 width: MediaQuery.of(context).size.shortestSide / 3,
                 fit: BoxFit.contain,

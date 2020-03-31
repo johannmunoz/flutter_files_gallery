@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:files_gallery/src/file_icons_library.dart';
+import 'package:files_gallery/src/file_types.dart';
 import 'package:files_gallery/src/full_screen_file.dart';
 import 'package:files_gallery/src/full_screen_image.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,8 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:path/path.dart';
 
 class Gallery extends StatelessWidget {
-  final List<File> files;
-  final List<String> urls;
+  final List<GalleryFile> files;
+  final List<GalleryUrl> urls;
   final OnRemoveMemoryFile onDeleteMemoryFile;
   final OnRemoveNetworkFile onDeleteNetworkFile;
 
@@ -45,29 +46,21 @@ class Gallery extends StatelessWidget {
                   if (files != null && files.isNotEmpty)
                     ...files
                         .asMap()
-                        .map((index, file) => MapEntry(
+                        .map((index, galleryFile) => MapEntry(
                               index,
-                              _buildMemoryMap(context, file, index, borderSize),
+                              _buildMemoryMap(
+                                  context, galleryFile, index, borderSize),
                             ))
                         .values
                         .toList(),
                   if (urls != null && urls.isNotEmpty)
                     ...urls
                         .asMap()
-                        .map((index, fullUrl) {
-                          var url = 'https://via.placeholder.com/300.png';
-                          var filename = 'file.png';
-                          final paths = fullUrl.split('+');
-                          if (paths.isNotEmpty) {
-                            url = paths.first;
-                            filename = paths.last;
-                          }
-                          return MapEntry(
-                            index,
-                            _buildNetworkMap(
-                                context, filename, url, index, borderSize),
-                          );
-                        })
+                        .map((index, galleryUrl) => MapEntry(
+                              index,
+                              _buildNetworkMap(
+                                  context, galleryUrl, index, borderSize),
+                            ))
                         .values
                         .toList()
                 ],
@@ -79,8 +72,23 @@ class Gallery extends StatelessWidget {
     );
   }
 
-  GestureDetector _buildNetworkMap(BuildContext context, String filename,
-      String url, int index, double borderSize) {
+  GestureDetector _buildNetworkMap(BuildContext context, GalleryUrl galleryUrl,
+      int index, double borderSize) {
+    if (galleryUrl == null) {
+      galleryUrl = GalleryUrl(
+        filename: 'file.png',
+        url: 'https://via.placeholder.com/300.png',
+      );
+    }
+
+    final filename =
+        galleryUrl.filename != null && galleryUrl.filename.isNotEmpty
+            ? galleryUrl.filename
+            : 'file.png';
+    final url = galleryUrl.url != null && galleryUrl.url.isNotEmpty
+        ? galleryUrl.url
+        : 'https://via.placeholder.com/300.png';
+
     final ext = extension(filename);
     final isImage = _checkIfIsImage(ext);
     return GestureDetector(
@@ -88,8 +96,7 @@ class Gallery extends StatelessWidget {
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            final ext = extension(filename);
-            if (_checkIfIsImage(ext)) {
+            if (isImage) {
               return FullScreenImage.network(
                 url,
                 onDeleteImage: () => onDeleteNetworkFile(index),
@@ -130,12 +137,14 @@ class Gallery extends StatelessWidget {
 
   Widget _buildMemoryMap(
     BuildContext context,
-    File file,
+    GalleryFile galleryFile,
     int index,
     double borderSize,
   ) {
-    final ext = extension(file.path);
-    final filename = basename(file.path);
+    if (galleryFile == null || galleryFile.file == null) {
+      galleryFile = GalleryFile(filename: 'file.file');
+    }
+    final ext = extension(galleryFile.filename);
     final isImage = _checkIfIsImage(ext);
 
     return GestureDetector(
@@ -145,13 +154,13 @@ class Gallery extends StatelessWidget {
           builder: (context) {
             if (isImage) {
               return FullScreenImage.file(
-                file,
+                galleryFile.file,
                 onDeleteImage: () => onDeleteMemoryFile(index),
               );
             } else {
               return FullScreenFile(
                 fileicon: relative(FileIcons.getFileIcon(ext)),
-                filename: filename,
+                filename: galleryFile.filename,
                 onDeleteImage: () => onDeleteMemoryFile(index),
               );
             }
@@ -174,8 +183,8 @@ class Gallery extends StatelessWidget {
           ),
           Positioned.fill(
             child: isImage
-                ? _buildMemoryImageWidget(file, borderSize)
-                : _buildFileWidget(filename, ext, borderSize),
+                ? _buildMemoryImageWidget(galleryFile.file, borderSize)
+                : _buildFileWidget(galleryFile.filename, ext, borderSize),
           ),
         ]),
       ),

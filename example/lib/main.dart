@@ -43,10 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
       value: ValueItem(name: 'test-image-3.pdf'),
     ),
     FileItem(
-      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
-      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
-      fileicon: 'assets/fileicons/doc.svg',
-      value: ValueItem(name: 'test-image-4.doc'),
+      // id: '',
+      // imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      // fileicon: 'assets/fileicons/doc.svg',
+      // value: ValueItem(),
     ),
 
     // 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
@@ -65,8 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           Container(
             child: Gallery(
-              urls:
-                  urls.map((item) => '${item.id}+${item.value.name}').toList(),
+              urls: urls
+                  .map(
+                    (item) => GalleryUrl(
+                      filename: item.value?.name,
+                      url: item.id,
+                    ),
+                  )
+                  .toList(),
               onDeleteNetworkFile: (index) =>
                   setState(() => urls.removeAt(index)),
             ),
