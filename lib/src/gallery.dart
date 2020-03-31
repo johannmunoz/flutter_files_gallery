@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:files_gallery/src/file_icons_library.dart';
 import 'package:files_gallery/src/file_types.dart';
-import 'package:files_gallery/src/full_screen_file.dart';
-import 'package:files_gallery/src/full_screen_image.dart';
+import 'package:files_gallery/src/fullscreen/full_screen_file.dart';
+import 'package:files_gallery/src/fullscreen/full_screen_image.dart';
+import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
+import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:path/path.dart';
 
 class Gallery extends StatelessWidget {
@@ -15,13 +13,13 @@ class Gallery extends StatelessWidget {
   final OnRemoveMemoryFile onDeleteMemoryFile;
   final OnRemoveNetworkFile onDeleteNetworkFile;
 
-  const Gallery(
-      {Key key,
-      this.files,
-      this.urls,
-      this.onDeleteMemoryFile,
-      this.onDeleteNetworkFile})
-      : super(key: key);
+  const Gallery({
+    Key key,
+    this.files,
+    this.urls,
+    this.onDeleteMemoryFile,
+    this.onDeleteNetworkFile,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -112,10 +110,9 @@ class Gallery extends StatelessWidget {
         ),
       ),
       child: Container(
-        color: Colors.black,
+        color: Colors.grey[300],
         height: borderSize,
         width: borderSize,
-        alignment: Alignment.center,
         child: Stack(children: [
           Positioned.fill(
             child: Container(
@@ -127,8 +124,12 @@ class Gallery extends StatelessWidget {
           ),
           Positioned.fill(
             child: isImage
-                ? _buildNetworkImageWidget(url, borderSize)
-                : _buildFileWidget(filename, ext, borderSize),
+                ? ImageThumbnail.network(url, borderSize: borderSize)
+                : FileThumbnail(
+                    filename: filename,
+                    ext: ext,
+                    borderSize: borderSize,
+                  ),
           ),
         ]),
       ),
@@ -183,66 +184,18 @@ class Gallery extends StatelessWidget {
           ),
           Positioned.fill(
             child: isImage
-                ? _buildMemoryImageWidget(galleryFile.file, borderSize)
-                : _buildFileWidget(galleryFile.filename, ext, borderSize),
+                ? ImageThumbnail.file(
+                    galleryFile.file,
+                    borderSize: borderSize,
+                  )
+                : FileThumbnail(
+                    filename: galleryFile.filename,
+                    ext: ext,
+                    borderSize: borderSize,
+                  ),
           ),
         ]),
       ),
-    );
-  }
-
-  Container _buildMemoryImageWidget(File file, double borderSize) {
-    return Container(
-      child: FadeInImage(
-        placeholder: Image.memory(kTransparentImage).image,
-        image: FileImage(file),
-        height: borderSize,
-        width: borderSize,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
-
-  Container _buildNetworkImageWidget(String url, double borderSize) {
-    return Container(
-      child: FadeInImage(
-        placeholder: Image.memory(kTransparentImage).image,
-        image: NetworkImage(url),
-        height: borderSize,
-        width: borderSize,
-        fit: BoxFit.cover,
-      ),
-    );
-  }
-
-  Widget _buildFileWidget(String filename, String ext, double borderSize) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Container(
-            padding: EdgeInsets.all(15.0),
-            color: Colors.grey[300],
-            child: SvgPicture.asset(
-              relative(FileIcons.getFileIcon(ext)),
-              package: 'files_gallery',
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: double.infinity,
-            color: Colors.black26,
-            child: Text(
-              filename,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
