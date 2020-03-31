@@ -4,16 +4,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path/path.dart';
 
 class FileThumbnail extends StatelessWidget {
-  const FileThumbnail({
-    Key key,
-    @required this.filename,
-    @required this.ext,
-    @required this.borderSize,
-  }) : super(key: key);
+  const FileThumbnail({Key key, @required this.filename, @required this.ext})
+      : super(key: key);
 
   final String filename;
   final String ext;
-  final double borderSize;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +21,6 @@ class FileThumbnail extends StatelessWidget {
             child: SvgPicture.asset(
               relative(FileIcons.getFileIcon(ext)),
               package: 'files_gallery',
-              width: borderSize / 5,
-              height: borderSize / 5,
             ),
           ),
         ),

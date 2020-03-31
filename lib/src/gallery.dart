@@ -4,6 +4,7 @@ import 'package:files_gallery/src/fullscreen/full_screen_file.dart';
 import 'package:files_gallery/src/fullscreen/full_screen_image.dart';
 import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
 import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
+import 'package:files_gallery/src/thumbnails/placeholder_container.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
@@ -70,7 +71,7 @@ class Gallery extends StatelessWidget {
     );
   }
 
-  GestureDetector _buildNetworkMap(BuildContext context, GalleryUrl galleryUrl,
+  Widget _buildNetworkMap(BuildContext context, GalleryUrl galleryUrl,
       int index, double borderSize) {
     if (galleryUrl == null) {
       galleryUrl = GalleryUrl(
@@ -89,49 +90,37 @@ class Gallery extends StatelessWidget {
 
     final ext = extension(filename);
     final isImage = _checkIfIsImage(ext);
-    return GestureDetector(
-      onLongPress: () => print('long press'),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            if (isImage) {
-              return FullScreenImage.network(
-                url,
-                onDeleteImage: () => onDeleteNetworkFile(index),
-              );
-            } else {
-              return FullScreenFile(
-                fileicon: FileIcons.getFileIcon(ext),
-                filename: filename,
-                onDeleteImage: () => onDeleteNetworkFile(index),
-              );
-            }
-          },
+    return Container(
+      width: borderSize,
+      height: borderSize,
+      child: GestureDetector(
+        onLongPress: () => print('long press'),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              if (isImage) {
+                return FullScreenImage.network(
+                  url,
+                  onDeleteImage: () => onDeleteNetworkFile(index),
+                );
+              } else {
+                return FullScreenFile(
+                  fileicon: FileIcons.getFileIcon(ext),
+                  filename: filename,
+                  onDeleteImage: () => onDeleteNetworkFile(index),
+                );
+              }
+            },
+          ),
         ),
-      ),
-      child: Container(
-        color: Colors.grey[300],
-        height: borderSize,
-        width: borderSize,
-        child: Stack(children: [
-          Positioned.fill(
-            child: Container(
-              child: Icon(
-                Icons.image,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: isImage
-                ? ImageThumbnail.network(url, borderSize: borderSize)
-                : FileThumbnail(
-                    filename: filename,
-                    ext: ext,
-                    borderSize: borderSize,
-                  ),
-          ),
-        ]),
+        child: PlaceholderContainer(
+          child: isImage
+              ? ImageThumbnail.network(url, borderSize: borderSize)
+              : FileThumbnail(
+                  filename: filename,
+                  ext: ext,
+                ),
+        ),
       ),
     );
   }
@@ -148,53 +137,37 @@ class Gallery extends StatelessWidget {
     final ext = extension(galleryFile.filename);
     final isImage = _checkIfIsImage(ext);
 
-    return GestureDetector(
-      onLongPress: () => print('long press'),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            if (isImage) {
-              return FullScreenImage.file(
-                galleryFile.file,
-                onDeleteImage: () => onDeleteMemoryFile(index),
-              );
-            } else {
-              return FullScreenFile(
-                fileicon: relative(FileIcons.getFileIcon(ext)),
-                filename: galleryFile.filename,
-                onDeleteImage: () => onDeleteMemoryFile(index),
-              );
-            }
-          },
+    return Container(
+      width: borderSize,
+      height: borderSize,
+      child: GestureDetector(
+        onLongPress: () => print('long press'),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              if (isImage) {
+                return FullScreenImage.file(
+                  galleryFile.file,
+                  onDeleteImage: () => onDeleteMemoryFile(index),
+                );
+              } else {
+                return FullScreenFile(
+                  fileicon: relative(FileIcons.getFileIcon(ext)),
+                  filename: galleryFile.filename,
+                  onDeleteImage: () => onDeleteMemoryFile(index),
+                );
+              }
+            },
+          ),
         ),
-      ),
-      child: Container(
-        color: Colors.black,
-        height: borderSize,
-        width: borderSize,
-        alignment: Alignment.center,
-        child: Stack(children: [
-          Positioned.fill(
-            child: Container(
-              child: Icon(
-                Icons.image,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: isImage
-                ? ImageThumbnail.file(
-                    galleryFile.file,
-                    borderSize: borderSize,
-                  )
-                : FileThumbnail(
-                    filename: galleryFile.filename,
-                    ext: ext,
-                    borderSize: borderSize,
-                  ),
-          ),
-        ]),
+        child: PlaceholderContainer(
+          child: isImage
+              ? ImageThumbnail.file(galleryFile.file, borderSize: borderSize)
+              : FileThumbnail(
+                  filename: galleryFile.filename,
+                  ext: ext,
+                ),
+        ),
       ),
     );
   }
