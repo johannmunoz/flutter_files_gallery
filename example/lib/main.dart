@@ -43,17 +43,18 @@ class _MyHomePageState extends State<MyHomePage> {
       value: ValueItem(name: 'test-image-3.pdf'),
     ),
     FileItem(
-      // id: '',
-      // imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
-      // fileicon: 'assets/fileicons/doc.svg',
-      // value: ValueItem(),
-    ),
+        // id: '',
+        // imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+        // fileicon: 'assets/fileicons/doc.svg',
+        // value: ValueItem(),
+        ),
 
     // 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/peppers.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/goldhill.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/mountain.png',
   ];
+  List<int> selectedFiles = [];
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() => urls.removeAt(index)),
             ),
           ),
+          Container(
+            child: SelectableGallery(
+              urls: urls
+                  .map(
+                    (item) => GalleryUrl(
+                      filename: item.value?.name,
+                      url: item.id,
+                    ),
+                  )
+                  .toList(),
+              onSelectedUrls: (indexes) {
+                print(indexes);
+                setState(() => selectedFiles = indexes);
+              },
+            ),
+          ),
+          Text('Selected files: $selectedFiles')
         ],
       ),
     );
