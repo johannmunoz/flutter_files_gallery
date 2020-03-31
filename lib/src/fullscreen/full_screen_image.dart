@@ -5,17 +5,30 @@ import 'package:flutter/material.dart';
 class FullScreenImage extends StatelessWidget {
   final ImageProvider image;
   final VoidCallback onDeleteImage;
+  final bool readonly;
 
-  FullScreenImage.file(File file, {Key key, this.onDeleteImage})
-      : image = FileImage(file),
+  FullScreenImage.file(
+    File file, {
+    Key key,
+    this.onDeleteImage,
+    this.readonly = false,
+  })  : image = FileImage(file),
         super(key: key);
 
-  FullScreenImage.network(String src, {Key key, this.onDeleteImage})
-      : image = NetworkImage(src),
+  FullScreenImage.network(
+    String src, {
+    Key key,
+    this.onDeleteImage,
+    this.readonly = false,
+  })  : image = NetworkImage(src),
         super(key: key);
 
-  const FullScreenImage(this.image, {Key key, this.onDeleteImage})
-      : super(key: key);
+  const FullScreenImage(
+    this.image, {
+    Key key,
+    this.onDeleteImage,
+    this.readonly = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +52,7 @@ class FullScreenImage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _buildBackButton(context),
-                    _buildDeleteButton(context),
+                    if (!readonly) _buildDeleteButton(context),
                   ],
                 ),
               ),

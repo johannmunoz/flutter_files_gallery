@@ -135,7 +135,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
         onTap: () {
           _addRemoveNetworkIndex(index);
           widget.onSelectedUrls(listSelectedUrls);
-          print('Added network index: $listSelectedUrls');
         },
         child: isImage
             ? ImageThumbnail.network(url, borderSize: borderSize)
@@ -167,7 +166,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
         onTap: () {
           _addRemoveFileIndex(index);
           widget.onSelectedFiles(listSelectedFiles);
-          print('Added memory index: $listSelectedFiles');
         },
         child: isImage
             ? ImageThumbnail.file(galleryFile.file, borderSize: borderSize)

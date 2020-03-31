@@ -79,6 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Container(
+            child: Gallery(
+              readonly: true,
+              urls: urls
+                  .map(
+                    (item) => GalleryUrl(
+                      filename: item.value?.name,
+                      url: item.id,
+                    ),
+                  )
+                  .toList(),
+              onDeleteNetworkFile: (index) =>
+                  setState(() => urls.removeAt(index)),
+            ),
+          ),
+          Container(
             child: SelectableGallery(
               urls: urls
                   .map(

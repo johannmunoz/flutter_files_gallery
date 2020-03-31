@@ -6,12 +6,14 @@ class FullScreenFile extends StatelessWidget {
   final VoidCallback onDeleteImage;
   final String filename;
   final String fileicon;
+  final bool readonly;
 
   const FullScreenFile({
     Key key,
     this.onDeleteImage,
     this.filename,
     this.fileicon,
+    this.readonly = false,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class FullScreenFile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _buildBackButton(context),
-                    _buildDeleteButton(context),
+                    if (!readonly) _buildDeleteButton(context),
                   ],
                 ),
               ),

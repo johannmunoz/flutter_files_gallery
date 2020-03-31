@@ -13,6 +13,7 @@ class Gallery extends StatelessWidget {
   final List<GalleryUrl> urls;
   final OnRemoveMemoryFile onDeleteMemoryFile;
   final OnRemoveNetworkFile onDeleteNetworkFile;
+  final bool readonly;
 
   const Gallery({
     Key key,
@@ -20,6 +21,7 @@ class Gallery extends StatelessWidget {
     this.urls,
     this.onDeleteMemoryFile,
     this.onDeleteNetworkFile,
+    this.readonly = false,
   }) : super(key: key);
 
   @override
@@ -98,7 +100,6 @@ class Gallery extends StatelessWidget {
       width: borderSize,
       height: borderSize,
       child: GestureDetector(
-        onLongPress: () => print('long press'),
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
@@ -106,12 +107,14 @@ class Gallery extends StatelessWidget {
                 return FullScreenImage.network(
                   url,
                   onDeleteImage: () => onDeleteNetworkFile(index),
+                  readonly: readonly,
                 );
               } else {
                 return FullScreenFile(
                   fileicon: FileIcons.getFileIcon(ext),
                   filename: filename,
                   onDeleteImage: () => onDeleteNetworkFile(index),
+                  readonly: readonly,
                 );
               }
             },
@@ -145,7 +148,6 @@ class Gallery extends StatelessWidget {
       width: borderSize,
       height: borderSize,
       child: GestureDetector(
-        onLongPress: () => print('long press'),
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) {
@@ -153,12 +155,14 @@ class Gallery extends StatelessWidget {
                 return FullScreenImage.file(
                   galleryFile.file,
                   onDeleteImage: () => onDeleteMemoryFile(index),
+                  readonly: readonly,
                 );
               } else {
                 return FullScreenFile(
                   fileicon: relative(FileIcons.getFileIcon(ext)),
                   filename: galleryFile.filename,
                   onDeleteImage: () => onDeleteMemoryFile(index),
+                  readonly: readonly,
                 );
               }
             },
