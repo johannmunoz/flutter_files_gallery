@@ -10,6 +10,7 @@ class SelectableGallery extends StatefulWidget {
   final List<GalleryUrl> urls;
   final OnSelectedFiles onSelectedFiles;
   final OnSelectedUrls onSelectedUrls;
+  final bool reverse;
 
   const SelectableGallery({
     Key key,
@@ -17,6 +18,7 @@ class SelectableGallery extends StatefulWidget {
     this.urls,
     this.onSelectedFiles,
     this.onSelectedUrls,
+    this.reverse = false,
   }) : super(key: key);
 
   @override
@@ -47,9 +49,15 @@ class _SelectableGalleryState extends State<SelectableGallery> {
       }
     }
     if (widget.onSelectedFiles != null) {
+      if (widget.reverse) {
+        listSelectedFiles = listSelectedFiles.reversed.toList();
+      }
       widget.onSelectedFiles(listSelectedFiles);
     }
     if (widget.onSelectedUrls != null) {
+      if (widget.reverse) {
+        listSelectedUrls = listSelectedUrls.reversed.toList();
+      }
       widget.onSelectedUrls(listSelectedUrls);
     }
   }
@@ -134,7 +142,9 @@ class _SelectableGalleryState extends State<SelectableGallery> {
         borderSize: borderSize,
         onTap: () {
           _addRemoveNetworkIndex(index);
-          widget.onSelectedUrls(listSelectedUrls);
+          if (widget.onSelectedUrls != null) {
+            widget.onSelectedUrls(listSelectedUrls);
+          }
         },
         child: isImage
             ? ImageThumbnail.network(url, borderSize: borderSize)
@@ -165,7 +175,9 @@ class _SelectableGalleryState extends State<SelectableGallery> {
         borderSize: borderSize,
         onTap: () {
           _addRemoveFileIndex(index);
-          widget.onSelectedFiles(listSelectedFiles);
+          if (widget.onSelectedFiles != null) {
+            widget.onSelectedFiles(listSelectedFiles);
+          }
         },
         child: isImage
             ? ImageThumbnail.file(galleryFile.file, borderSize: borderSize)
@@ -184,6 +196,10 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     } else {
       listSelectedUrls.add(index);
     }
+    listSelectedUrls.sort();
+    if (widget.reverse) {
+      listSelectedUrls = listSelectedUrls.reversed.toList();
+    }
   }
 
   void _addRemoveFileIndex(int index) {
@@ -192,6 +208,10 @@ class _SelectableGalleryState extends State<SelectableGallery> {
       listSelectedFiles.remove(index);
     } else {
       listSelectedFiles.add(index);
+    }
+    listSelectedFiles.sort();
+    if (widget.reverse) {
+      listSelectedFiles = listSelectedFiles.reversed.toList();
     }
   }
 
