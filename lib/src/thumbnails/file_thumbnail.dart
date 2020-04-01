@@ -12,35 +12,40 @@ class FileThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Container(
-            padding: EdgeInsets.all(30.0),
-            color: Colors.grey[300],
-            child: SvgPicture.asset(
-              relative(FileIcons.getFileIcon(ext)),
-              package: 'files_gallery',
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text(
-                filename,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11),
+    return LayoutBuilder(
+      builder: (context, boxConstraints) {
+        final padding = boxConstraints.maxWidth / 3;
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                padding: EdgeInsets.all(padding),
+                color: Colors.grey[300],
+                child: SvgPicture.asset(
+                  relative(FileIcons.getFileIcon(ext)),
+                  package: 'files_gallery',
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: Text(
+                    filename,
+                    maxLines: 2,
+                    textAlign: TextAlign.justify,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 11),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
