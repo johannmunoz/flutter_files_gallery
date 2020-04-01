@@ -28,11 +28,21 @@ class Gallery extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, boxConstraints) {
-        var borderSize = 100.0;
-        if (MediaQuery.of(context).orientation == Orientation.landscape) {
-          borderSize = (boxConstraints.maxWidth / 6) - 2;
+        final maxWidth = boxConstraints.maxWidth;
+        final isMobile = maxWidth < 600;
+
+        var rowItemsCount = 4;
+
+        if (isMobile) {
+          if (MediaQuery.of(context).orientation == Orientation.landscape) {
+            rowItemsCount = 8;
+          }
         } else {
-          borderSize = (boxConstraints.maxWidth / 4) - 2;
+          if (MediaQuery.of(context).orientation == Orientation.landscape) {
+            rowItemsCount = 8;
+          } else {
+            rowItemsCount = 6;
+          }
         }
 
         List<Widget> listNetworkFiles = urls != null
@@ -40,7 +50,7 @@ class Gallery extends StatelessWidget {
                 .asMap()
                 .map((index, galleryUrl) => MapEntry(
                       index,
-                      _buildNetworkMap(context, galleryUrl, index, borderSize),
+                      _buildNetworkMap(context, galleryUrl, index),
                     ))
                 .values
                 .toList()
@@ -51,34 +61,27 @@ class Gallery extends StatelessWidget {
                 .asMap()
                 .map((index, galleryFile) => MapEntry(
                       index,
-                      _buildMemoryMap(context, galleryFile, index, borderSize),
+                      _buildMemoryMap(context, galleryFile, index),
                     ))
                 .values
                 .toList()
             : [];
 
-        return Row(
-          children: <Widget>[
-            Flexible(
-              fit: FlexFit.tight,
-              child: Wrap(
-                direction: Axis.horizontal,
-                spacing: 2.0,
-                runSpacing: 2.0,
-                children: [
-                  ...listNetworkFiles,
-                  ...listMemoryFiles,
-                ],
-              ),
-            ),
-          ],
+        return GridView.count(
+          shrinkWrap: true,
+          primary: false,
+          padding: const EdgeInsets.all(4),
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 2,
+          crossAxisCount: rowItemsCount,
+          children: <Widget>[...listNetworkFiles, ...listMemoryFiles],
         );
       },
     );
   }
 
-  Widget _buildNetworkMap(BuildContext context, GalleryUrl galleryUrl,
-      int index, double borderSize) {
+  Widget _buildNetworkMap(
+      BuildContext context, GalleryUrl galleryUrl, int index) {
     if (galleryUrl == null) {
       galleryUrl = GalleryUrl(
         filename: 'file.png',
@@ -97,8 +100,6 @@ class Gallery extends StatelessWidget {
     final ext = extension(filename);
     final isImage = _checkIfIsImage(ext);
     return Container(
-      width: borderSize,
-      height: borderSize,
       child: GestureDetector(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -122,7 +123,7 @@ class Gallery extends StatelessWidget {
         ),
         child: PlaceholderContainer(
           child: isImage
-              ? ImageThumbnail.network(url, borderSize: borderSize)
+              ? ImageThumbnail.network(url)
               : FileThumbnail(
                   filename: filename,
                   ext: ext,
@@ -133,11 +134,7 @@ class Gallery extends StatelessWidget {
   }
 
   Widget _buildMemoryMap(
-    BuildContext context,
-    GalleryFile galleryFile,
-    int index,
-    double borderSize,
-  ) {
+      BuildContext context, GalleryFile galleryFile, int index) {
     if (galleryFile == null || galleryFile.file == null) {
       galleryFile = GalleryFile(filename: 'file.file');
     }
@@ -145,8 +142,6 @@ class Gallery extends StatelessWidget {
     final isImage = _checkIfIsImage(ext);
 
     return Container(
-      width: borderSize,
-      height: borderSize,
       child: GestureDetector(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
@@ -170,7 +165,7 @@ class Gallery extends StatelessWidget {
         ),
         child: PlaceholderContainer(
           child: isImage
-              ? ImageThumbnail.file(galleryFile.file, borderSize: borderSize)
+              ? ImageThumbnail.file(galleryFile.file)
               : FileThumbnail(
                   filename: galleryFile.filename,
                   ext: ext,

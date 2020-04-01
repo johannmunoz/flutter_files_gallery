@@ -42,12 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       fileicon: 'assets/fileicons/pdf.svg',
       value: ValueItem(name: 'test-image-3.pdf'),
     ),
-    FileItem(
-        // id: '',
-        // imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
-        // fileicon: 'assets/fileicons/doc.svg',
-        // value: ValueItem(),
-        ),
+    FileItem(),
 
     // 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
     // 'https://homepages.cae.wisc.edu/~ece533/images/peppers.png',
@@ -62,55 +57,56 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Flutter Gallery'),
       ),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            child: Gallery(
-              urls: urls
-                  .map(
-                    (item) => GalleryUrl(
-                      filename: item.value?.name,
-                      url: item.id,
-                    ),
-                  )
-                  .toList(),
-              onDeleteNetworkFile: (index) =>
-                  setState(() => urls.removeAt(index)),
+      body: Container(
+        child: ListView(
+          children: <Widget>[
+            Container(
+              child: Gallery(
+                urls: urls
+                    .map(
+                      (item) => GalleryUrl(
+                        filename: item.value?.name,
+                        url: item.id,
+                      ),
+                    )
+                    .toList(),
+                onDeleteNetworkFile: (index) =>
+                    setState(() => urls.removeAt(index)),
+              ),
             ),
-          ),
-          Container(
-            child: Gallery(
-              readonly: true,
-              urls: urls
-                  .map(
-                    (item) => GalleryUrl(
-                      filename: item.value?.name,
-                      url: item.id,
-                    ),
-                  )
-                  .toList(),
-              onDeleteNetworkFile: (index) =>
-                  setState(() => urls.removeAt(index)),
+            // Container(
+            //   child: Gallery(
+            //     readonly: true,
+            //     urls: urls
+            //         .map(
+            //           (item) => GalleryUrl(
+            //             filename: item.value?.name,
+            //             url: item.id,
+            //           ),
+            //         )
+            //         .toList(),
+            //     onDeleteNetworkFile: (index) =>
+            //         setState(() => urls.removeAt(index)),
+            //   ),
+            // ),
+            Container(
+              child: SelectableGallery(
+                urls: urls
+                    .map(
+                      (item) => GalleryUrl(
+                        filename: item.value?.name,
+                        url: item.id,
+                      ),
+                    )
+                    .toList(),
+                onSelectedUrls: (indexes) {
+                  setState(() => selectedFiles = indexes);
+                },
+              ),
             ),
-          ),
-          Container(
-            child: SelectableGallery(
-              urls: urls
-                  .map(
-                    (item) => GalleryUrl(
-                      filename: item.value?.name,
-                      url: item.id,
-                    ),
-                  )
-                  .toList(),
-              onSelectedUrls: (indexes) {
-                print(indexes);
-                setState(() => selectedFiles = indexes);
-              },
-            ),
-          ),
-          Text('Selected files: $selectedFiles')
-        ],
+            Text('Selected files: $selectedFiles')
+          ],
+        ),
       ),
     );
   }
