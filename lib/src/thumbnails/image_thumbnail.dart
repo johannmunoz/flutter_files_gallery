@@ -4,33 +4,33 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ImageThumbnail extends StatelessWidget {
-  ImageThumbnail.file(File file, {Key key, this.borderSize})
+  ImageThumbnail.file(File file, {Key key})
       : image = FileImage(file),
         super(key: key);
 
-  ImageThumbnail.network(String src, {Key key, this.borderSize})
+  ImageThumbnail.network(String src, {Key key})
       : image = NetworkImage(src),
         super(key: key);
 
   const ImageThumbnail({
     this.image,
-    this.borderSize,
     Key key,
   }) : super(key: key);
 
   final ImageProvider image;
-  final double borderSize;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: FadeInImage(
-        placeholder: Image.memory(kTransparentImage).image,
-        image: image,
-        height: borderSize,
-        width: borderSize,
-        fit: BoxFit.cover,
-      ),
+    return LayoutBuilder(
+      builder: (context, boxConstraints) {
+        return Container(
+          child: FadeInImage(
+            placeholder: Image.memory(kTransparentImage).image,
+            image: ResizeImage(image, width: boxConstraints.maxWidth.floor()),
+            fit: BoxFit.cover,
+          ),
+        );
+      },
     );
   }
 }
