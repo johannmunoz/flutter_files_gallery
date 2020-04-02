@@ -5,11 +5,19 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ImageThumbnail extends StatelessWidget {
   ImageThumbnail.file(File file, {Key key})
-      : image = FileImage(file),
+      : image = Image.file(
+          file,
+          cacheWidth: 125,
+          cacheHeight: 125,
+        ),
         super(key: key);
 
   ImageThumbnail.network(String src, {Key key})
-      : image = NetworkImage(src),
+      : image = Image.network(
+          src,
+          cacheWidth: 125,
+          cacheHeight: 125,
+        ),
         super(key: key);
 
   const ImageThumbnail({
@@ -17,16 +25,19 @@ class ImageThumbnail extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
-  final ImageProvider image;
+  final Image image;
 
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, boxConstraints) {
         return Container(
           child: FadeInImage(
-            placeholder: Image.memory(kTransparentImage).image,
-            image: ResizeImage(image, width: boxConstraints.maxWidth.floor()),
+            placeholder: Image.memory(
+              kTransparentImage,
+              cacheWidth: 125,
+              cacheHeight: 125,
+            ).image,
+            image: image.image,
             fit: BoxFit.cover,
           ),
         );
