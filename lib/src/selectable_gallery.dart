@@ -1,3 +1,4 @@
+import 'package:files_gallery/src/thumbnails/placeholder_container.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
@@ -36,18 +37,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _initLists());
 
     super.initState();
-  }
-
-  Future<Thumbnails> _getThumbnails() async {
-    final networkThumbnails =
-        await ThumbnailsManager().getNetworkThumbnails(widget.urls);
-    final memoryThumbnails =
-        await ThumbnailsManager().getMemoryThumbnails(widget.files);
-
-    return Thumbnails(
-      memoryThumbnails: memoryThumbnails,
-      networkThumbnails: networkThumbnails,
-    );
   }
 
   void _initLists() {
@@ -97,51 +86,59 @@ class _SelectableGalleryState extends State<SelectableGallery> {
           }
         }
 
-        return FutureBuilder<Thumbnails>(
-          future: _getThumbnails(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final thumbnails = snapshot.data;
-              List<Widget> listNetworkFiles =
-                  thumbnails?.networkThumbnails != null
-                      ? thumbnails.networkThumbnails
-                          .asMap()
-                          .map((index, galleryFile) => MapEntry(
-                                index,
-                                _buildNetworkMap(context, galleryFile, index),
-                              ))
-                          .values
-                          .toList()
-                      : [];
+        List<Widget> listNetworkFiles = widget.urls != null
+            ? widget.urls
+                .asMap()
+                .map(
+                  (index, urlItem) => MapEntry(
+                    index,
+                    FutureBuilder<GalleryFile>(
+                      future: ThumbnailsManager().getNetworkThumbnail(urlItem),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return _buildNetworkMap(
+                              context, snapshot.data, index);
+                        } else {
+                          return PlaceholderContainer(child: Container());
+                        }
+                      },
+                    ),
+                  ),
+                )
+                .values
+                .toList()
+            : [];
 
-              List<Widget> listMemoryFiles =
-                  thumbnails?.memoryThumbnails != null
-                      ? thumbnails.memoryThumbnails
-                          .asMap()
-                          .map((index, galleryFile) => MapEntry(
-                                index,
-                                _buildMemoryMap(context, galleryFile, index),
-                              ))
-                          .values
-                          .toList()
-                      : [];
-              if (listNetworkFiles.isEmpty && listMemoryFiles.isEmpty) {
-                return Container();
-              } else {
-                return GridView.count(
-                  shrinkWrap: true,
-                  primary: false,
-                  padding: const EdgeInsets.all(4),
-                  crossAxisSpacing: 2,
-                  mainAxisSpacing: 2,
-                  crossAxisCount: rowItemsCount,
-                  children: [...listNetworkFiles, ...listMemoryFiles],
-                );
-              }
-            } else {
-              return Container();
-            }
-          },
+        List<Widget> listMemoryFiles = widget.files != null
+            ? widget.files
+                .asMap()
+                .map((index, fileItem) => MapEntry(
+                      index,
+                      FutureBuilder<GalleryFile>(
+                        future:
+                            ThumbnailsManager().getMemoryThumbnail(fileItem),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return _buildMemoryMap(
+                                context, snapshot.data, index);
+                          } else {
+                            return PlaceholderContainer(child: Container());
+                          }
+                        },
+                      ),
+                    ))
+                .values
+                .toList()
+            : [];
+
+        return GridView.count(
+          shrinkWrap: true,
+          primary: false,
+          padding: const EdgeInsets.all(4),
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 2,
+          crossAxisCount: rowItemsCount,
+          children: [...listNetworkFiles, ...listMemoryFiles],
         );
       },
     );
@@ -149,9 +146,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
 
   Widget _buildNetworkMap(
       BuildContext context, GalleryFile galleryFile, int index) {
-    if (galleryFile == null || galleryFile.file == null) {
-      galleryFile = GalleryFile(filename: 'file.file');
-    }
     final ext = extension(galleryFile.filename);
     final isImage = _checkIfIsImage(ext);
 
