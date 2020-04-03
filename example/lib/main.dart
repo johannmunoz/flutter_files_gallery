@@ -25,19 +25,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<FileItem> urls = [
     FileItem(
-      id: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FBDChzI4lP4t3zv4ek4Fx%2F2020-03-18T17%3A08%3A12.737192.jpg?alt=media&token=3a85f41a-1a30-415d-8799-f1702ce8c8cf',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
       fileicon: '/assets/fileicons/image.svg',
       value: ValueItem(name: 'test-image.png'),
     ),
     FileItem(
-      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A29%3A56.100303.pdf?alt=media&token=99c7204c-9deb-4d49-8338-10624639ff86',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
       fileicon: '/assets/fileicons/image.svg',
-      value: ValueItem(name: 'test-image-2.png'),
+      value: ValueItem(name: 'test-pdf.pdf'),
     ),
     FileItem(
-      id: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A30%3A01.767335.jpeg?alt=media&token=8c44b525-28e9-4e6e-a0f2-580296e3c8d7',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
       fileicon: 'assets/fileicons/pdf.svg',
       value: ValueItem(name: 'test-image-3.pdf'),
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
               thickness: 10,
             ),
             Container(
-              child: Gallery(
+              child: ShowGallery(
                 urls: urls
                     .map(
                       (item) => GalleryUrl(

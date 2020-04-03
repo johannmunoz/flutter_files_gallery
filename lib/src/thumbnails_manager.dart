@@ -4,9 +4,53 @@ import 'package:files_gallery/files_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:crypto/crypto.dart';
 import 'package:image/image.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 
 class ThumbnailsManager {
+  Future<GalleryFile> getNetworkThumbnail(GalleryUrl urlItem) async {
+    if (urlItem.url == null || urlItem.filename == null)
+      return GalleryFile(filename: 'file.file');
+
+    if (!_checkIfIsImage(extension(urlItem.filename))) {
+      Directory dir = await getTemporaryDirectory();
+      final pathDestiny = join(dir.path, 'thumbnails', urlItem.filename);
+      final file = File(pathDestiny);
+      return GalleryFile(file: file, filename: urlItem.filename);
+    }
+
+    final hashUrl = _getHashUrl(urlItem.url + '_thumbnail');
+
+    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+
+    if (thumbFile != null) {
+      File originalFile =
+          await DefaultCacheManager().getSingleFile(urlItem.url);
+      return GalleryFile(
+        file: thumbFile,
+        filename: urlItem.filename,
+        original: originalFile,
+      );
+    }
+
+    final file = await _downloadFileToCache(urlItem.url);
+
+    final fileBytes = _getResizedFile(file);
+
+    thumbFile = await _saveFileToCache(fileBytes, urlItem.url);
+
+    return GalleryFile(
+      file: thumbFile,
+      filename: urlItem.filename,
+      original: file,
+    );
+  }
+
   Future<File> _getNetworkThumbnail(String url) async {
+    if (!_checkIfIsImage(extension(url).split('?').first)) {
+      File thumbFile = await DefaultCacheManager().getSingleFile(url);
+      return thumbFile;
+    }
     final hashUrl = _getHashUrl(url + '_thumbnail');
 
     File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
@@ -24,8 +68,47 @@ class ThumbnailsManager {
     return thumbFile;
   }
 
-  Future<File> getMemoryThumbnail(File file) async {
-    final hashUrl = _getHashUrl(file.path + '_thumbnail');
+  Future<GalleryFile> getMemoryThumbnail(GalleryFile fileItem) async {
+    if (fileItem.file == null || fileItem.filename == null)
+      return GalleryFile(filename: 'file.file');
+
+    if (!_checkIfIsImage(extension(fileItem.filename))) {
+      Directory dir = await getTemporaryDirectory();
+      final pathDestiny = join(dir.path, 'thumbnails', fileItem.filename);
+      final file = File(pathDestiny);
+      return GalleryFile(file: file, filename: fileItem.filename);
+    }
+    final hashUrl = _getHashUrl(fileItem.file.path + '_thumbnail');
+
+    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+
+    if (thumbFile != null) {
+      return GalleryFile(
+        file: thumbFile,
+        filename: fileItem.filename,
+        original: fileItem.file,
+      );
+    }
+
+    final fileBytes = _getResizedFile(fileItem.file);
+
+    thumbFile = await _saveFileToCache(fileBytes, fileItem.file.path);
+
+    return GalleryFile(
+      file: thumbFile,
+      filename: fileItem.filename,
+      original: fileItem.file,
+    );
+  }
+
+  Future<File> _getMemoryThumbnail(File fileItem) async {
+    if (!_checkIfIsImage(extension(fileItem.path))) {
+      Directory dir = await getTemporaryDirectory();
+      final pathDestiny = join(dir.path, 'thumbnails', basename(fileItem.path));
+      final file = File(pathDestiny);
+      return file;
+    }
+    final hashUrl = _getHashUrl(fileItem.path + '_thumbnail');
 
     File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
 
@@ -33,9 +116,9 @@ class ThumbnailsManager {
       return thumbFile;
     }
 
-    final fileBytes = _getResizedFile(file);
+    final fileBytes = _getResizedFile(fileItem);
 
-    thumbFile = await _saveFileToCache(fileBytes, file.path);
+    thumbFile = await _saveFileToCache(fileBytes, fileItem.path);
 
     return thumbFile;
   }
@@ -83,7 +166,7 @@ class ThumbnailsManager {
     final thumbnails = await Future.wait(memoryFiles.map((file) async {
       file = _checkNullMemoryItem(file);
       final thumbnailFile =
-          await ThumbnailsManager().getMemoryThumbnail(file.file);
+          await ThumbnailsManager()._getMemoryThumbnail(file.file);
       return GalleryFile(file: thumbnailFile, filename: file.filename);
     }).toList());
     return thumbnails;
@@ -98,7 +181,7 @@ class ThumbnailsManager {
     }
 
     if (galleryUrl.filename == null || galleryUrl.filename.isEmpty) {
-      galleryUrl.filename = 'file.png';
+      galleryUrl.filename = 'file.file';
     }
 
     if (galleryUrl.url == null || galleryUrl.url.isEmpty) {
@@ -114,6 +197,17 @@ class ThumbnailsManager {
     }
 
     return galleryFile;
+  }
+
+  bool _checkIfIsImage(String ext) {
+    switch (ext) {
+      case '.png':
+      case '.jpeg':
+      case '.jpg':
+        return true;
+      default:
+        return false;
+    }
   }
 }
 
