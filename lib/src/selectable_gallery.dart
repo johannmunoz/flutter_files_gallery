@@ -1,9 +1,11 @@
-import 'package:files_gallery/src/file_types.dart';
-import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
-import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
-import 'package:files_gallery/src/thumbnails/selectable_container.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+
+import 'package:files_gallery/src/file_types.dart';
+import 'package:files_gallery/src/thumbnails/animated_selectable_container.dart';
+import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
+import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
+import 'package:files_gallery/src/thumbnails_manager.dart';
 
 class SelectableGallery extends StatefulWidget {
   final List<GalleryFile> files;
@@ -34,6 +36,18 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _initLists());
 
     super.initState();
+  }
+
+  Future<Thumbnails> _getThumbnails() async {
+    final networkThumbnails =
+        await ThumbnailsManager().getNetworkThumbnails(widget.urls);
+    final memoryThumbnails =
+        await ThumbnailsManager().getMemoryThumbnails(widget.files);
+
+    return Thumbnails(
+      memoryThumbnails: memoryThumbnails,
+      networkThumbnails: networkThumbnails,
+    );
   }
 
   void _initLists() {
@@ -83,67 +97,62 @@ class _SelectableGalleryState extends State<SelectableGallery> {
           }
         }
 
-        List<Widget> listNetworkFiles = widget.urls != null
-            ? widget.urls
-                .asMap()
-                .map((index, galleryUrl) => MapEntry(
-                      index,
-                      _buildNetworkMap(context, galleryUrl, index),
-                    ))
-                .values
-                .toList()
-            : [];
+        return FutureBuilder<Thumbnails>(
+          future: _getThumbnails(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final thumbnails = snapshot.data;
+              List<Widget> listNetworkFiles =
+                  thumbnails?.networkThumbnails != null
+                      ? thumbnails.networkThumbnails
+                          .asMap()
+                          .map((index, galleryFile) => MapEntry(
+                                index,
+                                _buildNetworkMap(context, galleryFile, index),
+                              ))
+                          .values
+                          .toList()
+                      : [];
 
-        List<Widget> listMemoryFiles = widget.files != null
-            ? widget.files
-                .asMap()
-                .map((index, galleryFile) => MapEntry(
-                      index,
-                      _buildMemoryMap(context, galleryFile, index),
-                    ))
-                .values
-                .toList()
-            : [];
-
-        if (listNetworkFiles.isEmpty && listMemoryFiles.isEmpty) {
-          return Container();
-        } else {
-          return GridView.count(
-            shrinkWrap: true,
-            primary: false,
-            padding: const EdgeInsets.all(4),
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 2,
-            crossAxisCount: rowItemsCount,
-            children: <Widget>[...listNetworkFiles, ...listMemoryFiles],
-          );
-        }
+              List<Widget> listMemoryFiles =
+                  thumbnails?.memoryThumbnails != null
+                      ? thumbnails.memoryThumbnails
+                          .asMap()
+                          .map((index, galleryFile) => MapEntry(
+                                index,
+                                _buildMemoryMap(context, galleryFile, index),
+                              ))
+                          .values
+                          .toList()
+                      : [];
+              return GridView.count(
+                shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.all(4),
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+                crossAxisCount: rowItemsCount,
+                children: [...listNetworkFiles, ...listMemoryFiles],
+              );
+            } else {
+              return Container();
+            }
+          },
+        );
       },
     );
   }
 
   Widget _buildNetworkMap(
-      BuildContext context, GalleryUrl galleryUrl, int index) {
-    if (galleryUrl == null) {
-      galleryUrl = GalleryUrl(
-        filename: 'file.png',
-        url: 'https://via.placeholder.com/300.png',
-      );
+      BuildContext context, GalleryFile galleryFile, int index) {
+    if (galleryFile == null || galleryFile.file == null) {
+      galleryFile = GalleryFile(filename: 'file.file');
     }
-
-    final filename =
-        galleryUrl.filename != null && galleryUrl.filename.isNotEmpty
-            ? galleryUrl.filename
-            : 'file.png';
-
-    final url = galleryUrl.url != null && galleryUrl.url.isNotEmpty
-        ? galleryUrl.url
-        : 'https://via.placeholder.com/300.png';
-
-    final ext = extension(filename);
+    final ext = extension(galleryFile.filename);
     final isImage = _checkIfIsImage(ext);
+
     return Container(
-      child: SelectableContainer(
+      child: AnimatedSelectableContainer(
         onTap: () {
           _addRemoveNetworkIndex(index);
           if (widget.onSelectedUrls != null) {
@@ -151,9 +160,9 @@ class _SelectableGalleryState extends State<SelectableGallery> {
           }
         },
         child: isImage
-            ? ImageThumbnail.network(url)
+            ? ImageThumbnail.file(galleryFile.file)
             : FileThumbnail(
-                filename: filename,
+                filename: galleryFile.filename,
                 ext: ext,
               ),
       ),
@@ -169,8 +178,9 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     final isImage = _checkIfIsImage(ext);
 
     return Container(
-      child: SelectableContainer(
+      child: AnimatedSelectableContainer(
         onTap: () {
+          print('taped $index');
           _addRemoveFileIndex(index);
           if (widget.onSelectedFiles != null) {
             widget.onSelectedFiles(listSelectedFiles);
