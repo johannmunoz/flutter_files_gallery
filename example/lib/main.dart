@@ -60,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         child: ListView(
           children: <Widget>[
+            Divider(
+              color: Colors.orange,
+              thickness: 10,
+            ),
             Container(
               child: Gallery(
                 urls: urls
@@ -73,6 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 onDeleteNetworkFile: (index) =>
                     setState(() => urls.removeAt(index)),
               ),
+            ),
+            Divider(
+              color: Colors.orange,
+              thickness: 10,
             ),
             // Container(
             //   child: Gallery(
