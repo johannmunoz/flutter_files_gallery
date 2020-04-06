@@ -1,6 +1,8 @@
+import 'package:example/test_image_resize.dart';
 import 'package:flutter/material.dart';
 
 import 'package:files_gallery/files_gallery.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 void main() => runApp(MyApp());
 
@@ -31,16 +33,34 @@ class _MyHomePageState extends State<MyHomePage> {
       value: ValueItem(name: 'test-image.png'),
     ),
     FileItem(
-      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A29%3A56.100303.pdf?alt=media&token=99c7204c-9deb-4d49-8338-10624639ff86',
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FtYZGuhTvv6lWZJNoRTwv%2F2020-04-03T13%3A35%3A28.681523.jpg?alt=media&token=012ac266-6e1d-4467-b006-24cb36b3bf0d',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
       fileicon: '/assets/fileicons/image.svg',
-      value: ValueItem(name: 'test-pdf.pdf'),
+      value: ValueItem(name: 'test-image.png'),
     ),
     FileItem(
-      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A30%3A01.767335.jpeg?alt=media&token=8c44b525-28e9-4e6e-a0f2-580296e3c8d7',
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FqKpNyOgbaA5M9HfsdnaR%2F2020-03-17T16%3A53%3A44.630165.jpg?alt=media&token=bc15a493-2256-4b43-b22a-5aa0f2f8f3a7',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
       fileicon: 'assets/fileicons/pdf.svg',
-      value: ValueItem(name: 'test-image-3.pdf'),
+      value: ValueItem(name: 'test-image.png'),
+    ),
+    FileItem(
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A30%3A07.107614.jpg?alt=media&token=0e26d5a8-693d-4a5b-9b8d-07bed56a0d35',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
+      fileicon: '/assets/fileicons/image.svg',
+      value: ValueItem(name: 'test-image.png'),
+    ),
+    FileItem(
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2Fz7FUNSOWFVuSd3w6SIjZ%2F2020-04-01T13%3A30%3A23.482343.jpg?alt=media&token=58902d23-aa4c-49de-8a38-86e30bbc227f',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      fileicon: '/assets/fileicons/image.svg',
+      value: ValueItem(name: 'test-image.png'),
+    ),
+    FileItem(
+      id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FtYZGuhTvv6lWZJNoRTwv%2F2020-04-03T13%3A35%3A25.290154.jpg?alt=media&token=33d78fed-c132-42c7-93b7-92cd0cfdade2',
+      imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+      fileicon: 'assets/fileicons/pdf.svg',
+      value: ValueItem(name: 'test-image.png'),
     ),
     FileItem(),
 
@@ -56,6 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Gallery'),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          DefaultCacheManager().emptyCache();
+        },
+        label: Text('CLEAR'),
       ),
       body: Container(
         child: ListView(
