@@ -91,15 +91,19 @@ class ShowGallery extends StatelessWidget {
                 .toList()
             : [];
 
-        return GridView.count(
-          shrinkWrap: true,
-          primary: false,
-          padding: const EdgeInsets.all(4),
-          crossAxisSpacing: 2,
-          mainAxisSpacing: 2,
-          crossAxisCount: rowItemsCount,
-          children: [...listNetworkFiles, ...listMemoryFiles],
-        );
+        if (listNetworkFiles.isEmpty && listNetworkFiles.isEmpty) {
+          return Container();
+        } else {
+          return GridView.count(
+            shrinkWrap: true,
+            primary: false,
+            padding: const EdgeInsets.all(4),
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 2,
+            crossAxisCount: rowItemsCount,
+            children: [...listNetworkFiles, ...listMemoryFiles],
+          );
+        }
       },
     );
   }
