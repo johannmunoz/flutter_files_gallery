@@ -3,12 +3,15 @@ import 'dart:io';
 import 'package:files_gallery/files_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:crypto/crypto.dart';
-import 'package:image/image.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 class ThumbnailsManager {
   Future<GalleryFile> getNetworkThumbnail(GalleryUrl urlItem) async {
+    print('---------------------------------------------');
+    DateTime startTime = DateTime.now();
+    print('start: $startTime');
     if (urlItem.url == null || urlItem.filename == null)
       return GalleryFile(filename: 'file.file');
 
@@ -19,13 +22,22 @@ class ThumbnailsManager {
       return GalleryFile(file: file, filename: urlItem.filename);
     }
 
+    print('start get hash: ${DateTime.now()}');
+
     final hashUrl = _getHashUrl(urlItem.url + '_thumbnail');
+
+    print('start get file from cache: ${DateTime.now()}');
 
     File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
 
     if (thumbFile != null) {
+      print('start get original from cache: ${DateTime.now()}');
       File originalFile =
           await DefaultCacheManager().getSingleFile(urlItem.url);
+
+      print('return from cache: ${DateTime.now()}');
+      print('Total time: ${DateTime.now().difference(startTime)}');
+      print('---------------------------------------------');
       return GalleryFile(
         file: thumbFile,
         filename: urlItem.filename,
@@ -33,12 +45,24 @@ class ThumbnailsManager {
       );
     }
 
-    final file = await _downloadFileToCache(urlItem.url);
+    print('start download to cache: ${DateTime.now()}');
 
-    final fileBytes = _getResizedFile(file);
+    final file = await _downloadFileToCache(urlItem.url);
+    // final file = await compute(_getNetworkImage, urlItem.url);
+
+    print('start resize file: ${DateTime.now()}');
+
+    // final fileBytes = await compute(_getResizedFile, file);
+
+    final fileBytes = await _getResizedFile(file);
+
+    print('start saving to cache: ${DateTime.now()}');
 
     thumbFile = await _saveFileToCache(fileBytes, urlItem.url);
 
+    print('return new cache image: ${DateTime.now()}');
+    print('Total time: ${DateTime.now().difference(startTime)}');
+    print('---------------------------------------------');
     return GalleryFile(
       file: thumbFile,
       filename: urlItem.filename,
@@ -63,7 +87,7 @@ class ThumbnailsManager {
 
     final fileBytes = _getResizedFile(file);
 
-    thumbFile = await _saveFileToCache(fileBytes, url);
+    thumbFile = await _saveFileToCache(await fileBytes, url);
 
     return thumbFile;
   }
@@ -92,7 +116,7 @@ class ThumbnailsManager {
 
     final fileBytes = _getResizedFile(fileItem.file);
 
-    thumbFile = await _saveFileToCache(fileBytes, fileItem.file.path);
+    thumbFile = await _saveFileToCache(await fileBytes, fileItem.file.path);
 
     return GalleryFile(
       file: thumbFile,
@@ -116,7 +140,7 @@ class ThumbnailsManager {
       return thumbFile;
     }
 
-    final fileBytes = _getResizedFile(fileItem);
+    final fileBytes = await _getResizedFile(fileItem);
 
     thumbFile = await _saveFileToCache(fileBytes, fileItem.path);
 
@@ -127,14 +151,26 @@ class ThumbnailsManager {
     return await DefaultCacheManager().getSingleFile(url);
   }
 
-  List<int> _getResizedFile(File file) {
-    Image image = decodeImage(file.readAsBytesSync());
-    Image thumbnail = copyResize(
-      image,
-      width: 150,
-      height: 150,
+  // File _getNetworkImage(String url) {
+  //   var cacheManager = DefaultCacheManager();
+  //   cacheManager.getSingleFile(url).then((file) {
+  //     return file;
+  //   });
+  //   // return file;
+  // }
+
+  Future<List<int>> _getResizedFile(File file) async {
+    print('start resize file: ${DateTime.now()}');
+    print('before: ${file.lengthSync()}');
+    File compressedFile = await FlutterNativeImage.compressImage(
+      file.path,
+      quality: 80,
+      targetWidth: 200,
+      targetHeight: 200,
     );
-    return encodePng(thumbnail);
+    print('after: ${compressedFile.lengthSync()}');
+    print('start read as bytes: ${DateTime.now()}');
+    return compressedFile.readAsBytes();
   }
 
   Future<File> _saveFileToCache(List<int> bytes, String url) async {
