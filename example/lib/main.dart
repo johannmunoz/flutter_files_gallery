@@ -1,4 +1,3 @@
-import 'package:example/test_image_resize.dart';
 import 'package:flutter/material.dart';
 
 import 'package:files_gallery/files_gallery.dart';
