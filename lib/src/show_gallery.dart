@@ -1,69 +1,29 @@
+import 'package:files_gallery/src/file_icons_library.dart';
+import 'package:files_gallery/src/file_types.dart';
+import 'package:files_gallery/src/fullscreen/full_screen_file.dart';
+import 'package:files_gallery/src/fullscreen/full_screen_image.dart';
+import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
+import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
 import 'package:files_gallery/src/thumbnails/placeholder_container.dart';
+import 'package:files_gallery/src/thumbnails_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
-import 'package:files_gallery/src/file_types.dart';
-import 'package:files_gallery/src/thumbnails/animated_selectable_container.dart';
-import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
-import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
-import 'package:files_gallery/src/thumbnails_manager.dart';
-
-class SelectableGallery extends StatefulWidget {
+class ShowGallery extends StatelessWidget {
   final List<GalleryFile> files;
   final List<GalleryUrl> urls;
-  final OnSelectedFiles onSelectedFiles;
-  final OnSelectedUrls onSelectedUrls;
-  final bool reverse;
+  final OnRemoveMemoryFile onDeleteMemoryFile;
+  final OnRemoveNetworkFile onDeleteNetworkFile;
+  final bool readonly;
 
-  const SelectableGallery({
+  const ShowGallery({
     Key key,
     this.files,
     this.urls,
-    this.onSelectedFiles,
-    this.onSelectedUrls,
-    this.reverse = false,
+    this.onDeleteMemoryFile,
+    this.onDeleteNetworkFile,
+    this.readonly = false,
   }) : super(key: key);
-
-  @override
-  _SelectableGalleryState createState() => _SelectableGalleryState();
-}
-
-class _SelectableGalleryState extends State<SelectableGallery> {
-  List<int> listSelectedFiles = [];
-  List<int> listSelectedUrls = [];
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initLists());
-
-    super.initState();
-  }
-
-  void _initLists() {
-    if (widget.files != null && widget.files.isNotEmpty) {
-      for (int i = 0; i < widget.files.length; i++) {
-        listSelectedFiles.add(i);
-      }
-    }
-
-    if (widget.urls != null && widget.urls.isNotEmpty) {
-      for (int i = 0; i < widget.urls.length; i++) {
-        listSelectedUrls.add(i);
-      }
-    }
-    if (widget.onSelectedFiles != null) {
-      if (widget.reverse) {
-        listSelectedFiles = listSelectedFiles.reversed.toList();
-      }
-      widget.onSelectedFiles(listSelectedFiles);
-    }
-    if (widget.onSelectedUrls != null) {
-      if (widget.reverse) {
-        listSelectedUrls = listSelectedUrls.reversed.toList();
-      }
-      widget.onSelectedUrls(listSelectedUrls);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +46,8 @@ class _SelectableGalleryState extends State<SelectableGallery> {
           }
         }
 
-        List<Widget> listNetworkFiles = widget.urls != null
-            ? widget.urls
+        List<Widget> listNetworkFiles = urls != null
+            ? urls
                 .asMap()
                 .map(
                   (index, urlItem) => MapEntry(
@@ -116,8 +76,8 @@ class _SelectableGalleryState extends State<SelectableGallery> {
                 .toList()
             : [];
 
-        List<Widget> listMemoryFiles = widget.files != null
-            ? widget.files
+        List<Widget> listMemoryFiles = files != null
+            ? files
                 .asMap()
                 .map((index, fileItem) => MapEntry(
                       index,
@@ -168,73 +128,76 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     final isImage = _checkIfIsImage(ext);
 
     return Container(
-      child: AnimatedSelectableContainer(
-        onTap: () {
-          _addRemoveNetworkIndex(index);
-          if (widget.onSelectedUrls != null) {
-            widget.onSelectedUrls(listSelectedUrls);
-          }
-        },
-        child: isImage
-            ? ImageThumbnail.file(galleryFile.file)
-            : FileThumbnail(
-                filename: galleryFile.filename,
-                ext: ext,
-              ),
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              if (isImage) {
+                return FullScreenImage.file(
+                  galleryFile.original,
+                  onDeleteImage: () => onDeleteNetworkFile(index),
+                  readonly: readonly,
+                );
+              } else {
+                return FullScreenFile(
+                  fileicon: FileIcons.getFileIcon(ext),
+                  filename: galleryFile.filename,
+                  onDeleteImage: () => onDeleteNetworkFile(index),
+                  readonly: readonly,
+                );
+              }
+            },
+          ),
+        ),
+        child: PlaceholderContainer(
+          child: isImage
+              ? ImageThumbnail.file(galleryFile.file)
+              : FileThumbnail(
+                  filename: galleryFile.filename,
+                  ext: ext,
+                ),
+        ),
       ),
     );
   }
 
   Widget _buildMemoryMap(
       BuildContext context, GalleryFile galleryFile, int index) {
-    if (galleryFile == null || galleryFile.file == null) {
-      galleryFile = GalleryFile(filename: 'file.file');
-    }
     final ext = extension(galleryFile.filename);
     final isImage = _checkIfIsImage(ext);
 
     return Container(
-      child: AnimatedSelectableContainer(
-        onTap: () {
-          _addRemoveFileIndex(index);
-          if (widget.onSelectedFiles != null) {
-            widget.onSelectedFiles(listSelectedFiles);
-          }
-        },
-        child: isImage
-            ? ImageThumbnail.file(galleryFile.file)
-            : FileThumbnail(
-                filename: galleryFile.filename,
-                ext: ext,
-              ),
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              if (isImage) {
+                return FullScreenImage.file(
+                  files[index].file,
+                  onDeleteImage: () => onDeleteMemoryFile(index),
+                  readonly: readonly,
+                );
+              } else {
+                return FullScreenFile(
+                  fileicon: relative(FileIcons.getFileIcon(ext)),
+                  filename: galleryFile.filename,
+                  onDeleteImage: () => onDeleteMemoryFile(index),
+                  readonly: readonly,
+                );
+              }
+            },
+          ),
+        ),
+        child: PlaceholderContainer(
+          child: isImage
+              ? ImageThumbnail.file(galleryFile.file)
+              : FileThumbnail(
+                  filename: galleryFile.filename,
+                  ext: ext,
+                ),
+        ),
       ),
     );
-  }
-
-  void _addRemoveNetworkIndex(int index) {
-    final isOnList = listSelectedUrls.contains(index);
-    if (isOnList) {
-      listSelectedUrls.remove(index);
-    } else {
-      listSelectedUrls.add(index);
-    }
-    listSelectedUrls.sort();
-    if (widget.reverse) {
-      listSelectedUrls = listSelectedUrls.reversed.toList();
-    }
-  }
-
-  void _addRemoveFileIndex(int index) {
-    final isOnList = listSelectedFiles.contains(index);
-    if (isOnList) {
-      listSelectedFiles.remove(index);
-    } else {
-      listSelectedFiles.add(index);
-    }
-    listSelectedFiles.sort();
-    if (widget.reverse) {
-      listSelectedFiles = listSelectedFiles.reversed.toList();
-    }
   }
 
   bool _checkIfIsImage(String ext) {
@@ -249,5 +212,5 @@ class _SelectableGalleryState extends State<SelectableGallery> {
   }
 }
 
-typedef void OnSelectedFiles(List<int> indexesSelected);
-typedef void OnSelectedUrls(List<int> indexesSelected);
+typedef void OnRemoveMemoryFile(int indexFile);
+typedef void OnRemoveNetworkFile(int indexFile);

@@ -1,14 +1,54 @@
-# files_gallery
+# resvu/flutter-files-gallery
 
-A new Flutter package project.
+## Get started
 
-## Getting Started
+Add this to your package's `pubspec.yaml` file:
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+```
+# Where TAG_VERSION is the specific git tag to files_gallery:
+    git:
+      url: https://github.com/resvu/flutter-files-gallery.git
+      ref: TAG_VERSION
+```
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## ShowGallery
+
+Add the `ShowGallery` widget populated with the files to display and the action to perform on delete.
+
+```dart
+ShowGallery(
+    urls: urls
+        .map(
+            (item) => GalleryUrl(
+            filename: item.value?.name,
+            url: item.id,
+            ),
+        )
+        .toList(),
+    onDeleteNetworkFile: (index) =>
+        setState(() => urls.removeAt(index)),
+)
+```
+
+Set `readonly: true` to hide delete button.
+
+## SelectableGallery
+
+Add the `SelectableGallery` widget populated with the files to display and the list of indexes of files selected.
+
+```dart
+SelectableGallery(
+    urls: urls
+        .map(
+            (item) => GalleryUrl(
+            filename: item.value?.name,
+            url: item.id,
+            ),
+        )
+        .toList(),
+    onSelectedUrls: (indexes) {
+        setState(() => selectedFiles = indexes);
+    },
+)
+```
+Set `reverse: true` to return indexes on reverse.
