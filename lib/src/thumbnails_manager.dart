@@ -9,8 +9,7 @@ import 'package:path/path.dart';
 
 class ThumbnailsManager {
   Future<GalleryFile> getNetworkThumbnail(GalleryUrl urlItem) async {
-    if (urlItem.url == null || urlItem.filename == null)
-      return GalleryFile(filename: 'file.file');
+    urlItem = _checkNullNetworkItem(urlItem);
 
     if (!_checkIfIsImage(extension(urlItem.filename))) {
       Directory dir = await getTemporaryDirectory();
@@ -69,8 +68,7 @@ class ThumbnailsManager {
   }
 
   Future<GalleryFile> getMemoryThumbnail(GalleryFile fileItem) async {
-    if (fileItem.file == null || fileItem.filename == null)
-      return GalleryFile(filename: 'file.file');
+    fileItem = _checkNullMemoryItem(fileItem);
 
     if (!_checkIfIsImage(extension(fileItem.filename))) {
       Directory dir = await getTemporaryDirectory();
@@ -130,7 +128,7 @@ class ThumbnailsManager {
   Future<List<int>> _getResizedFile(File file) async {
     File compressedFile = await FlutterNativeImage.compressImage(
       file.path,
-      quality: 80,
+      quality: 70,
       targetWidth: 200,
       targetHeight: 200,
     );
@@ -172,31 +170,31 @@ class ThumbnailsManager {
     return thumbnails;
   }
 
-  GalleryUrl _checkNullNetworkItem(GalleryUrl galleryUrl) {
-    if (galleryUrl == null) {
-      galleryUrl = GalleryUrl(
+  GalleryUrl _checkNullNetworkItem(GalleryUrl urlItem) {
+    if (urlItem == null) {
+      urlItem = GalleryUrl(
         filename: 'file.png',
         url: 'https://via.placeholder.com/300.png',
       );
     }
 
-    if (galleryUrl.filename == null || galleryUrl.filename.isEmpty) {
-      galleryUrl.filename = 'file.file';
+    if (urlItem.filename == null || urlItem.filename.isEmpty) {
+      urlItem.filename = 'file.file';
     }
 
-    if (galleryUrl.url == null || galleryUrl.url.isEmpty) {
-      galleryUrl.url = 'https://via.placeholder.com/300.png';
+    if (urlItem.url == null || urlItem.url.isEmpty) {
+      urlItem.url = 'https://via.placeholder.com/300.png';
     }
 
-    return galleryUrl;
+    return urlItem;
   }
 
-  GalleryFile _checkNullMemoryItem(GalleryFile galleryFile) {
-    if (galleryFile == null || galleryFile.file == null) {
-      galleryFile = GalleryFile(filename: 'file.file');
+  GalleryFile _checkNullMemoryItem(GalleryFile fileItem) {
+    if (fileItem == null || fileItem.file == null) {
+      fileItem = GalleryFile(filename: 'file.file');
     }
 
-    return galleryFile;
+    return fileItem;
   }
 
   bool _checkIfIsImage(String ext) {
