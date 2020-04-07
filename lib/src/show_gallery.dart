@@ -105,7 +105,7 @@ class ShowGallery extends StatelessWidget {
                 .toList()
             : [];
 
-        if (listNetworkFiles.isEmpty && listNetworkFiles.isEmpty) {
+        if (listNetworkFiles.isEmpty && listMemoryFiles.isEmpty) {
           return Container();
         } else {
           return GridView.count(

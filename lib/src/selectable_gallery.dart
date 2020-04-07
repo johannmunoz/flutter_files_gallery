@@ -145,7 +145,7 @@ class _SelectableGalleryState extends State<SelectableGallery> {
                 .toList()
             : [];
 
-        if (listNetworkFiles.isEmpty && listNetworkFiles.isEmpty) {
+        if (listNetworkFiles.isEmpty && listMemoryFiles.isEmpty) {
           return Container();
         } else {
           return GridView.count(
