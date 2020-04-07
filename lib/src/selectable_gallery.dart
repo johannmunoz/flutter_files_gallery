@@ -182,7 +182,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     return Container(
       child: AnimatedSelectableContainer(
         onTap: () {
-          print('taped $index');
           _addRemoveFileIndex(index);
           if (widget.onSelectedFiles != null) {
             widget.onSelectedFiles(listSelectedFiles);
