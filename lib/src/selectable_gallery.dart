@@ -98,8 +98,15 @@ class _SelectableGalleryState extends State<SelectableGallery> {
                         if (snapshot.hasData) {
                           return _buildNetworkMap(
                               context, snapshot.data, index);
+                        } else if (snapshot.hasError) {
+                          return PlaceholderContainer();
                         } else {
-                          return PlaceholderContainer(child: Container());
+                          return PlaceholderContainer(
+                            placeholder: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -121,8 +128,15 @@ class _SelectableGalleryState extends State<SelectableGallery> {
                           if (snapshot.hasData) {
                             return _buildMemoryMap(
                                 context, snapshot.data, index);
+                          } else if (snapshot.hasError) {
+                            return PlaceholderContainer();
                           } else {
-                            return PlaceholderContainer(child: Container());
+                            return PlaceholderContainer(
+                              placeholder: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            );
                           }
                         },
                       ),
