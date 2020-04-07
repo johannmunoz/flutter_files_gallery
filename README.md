@@ -5,10 +5,11 @@
 Add this to your package's `pubspec.yaml` file:
 
 ```
-# Where TAG_VERSION is the specific git tag to files_gallery:
-    git:
-      url: https://github.com/resvu/flutter-files-gallery.git
-      ref: TAG_VERSION
+# Where TAG_VERSION is the specific git tag to use
+files_gallery:
+  git:
+    url: https://github.com/resvu/flutter-files-gallery.git
+    ref: TAG_VERSION
 ```
 
 ## ShowGallery
