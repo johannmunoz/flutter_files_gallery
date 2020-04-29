@@ -129,26 +129,29 @@ class ShowGallery extends StatelessWidget {
 
     return Container(
       child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              if (isImage) {
-                return FullScreenImage.file(
-                  galleryFile.original,
-                  onDeleteImage: () => onDeleteNetworkFile(index),
-                  readonly: readonly,
-                );
-              } else {
-                return FullScreenFile(
-                  fileicon: FileIcons.getFileIcon(ext),
-                  filename: galleryFile.filename,
-                  onDeleteImage: () => onDeleteNetworkFile(index),
-                  readonly: readonly,
-                );
-              }
-            },
-          ),
-        ),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          return Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                if (isImage) {
+                  return FullScreenImage.file(
+                    galleryFile.original,
+                    onDeleteImage: () => onDeleteNetworkFile(index),
+                    readonly: readonly,
+                  );
+                } else {
+                  return FullScreenFile(
+                    fileicon: FileIcons.getFileIcon(ext),
+                    filename: galleryFile.filename,
+                    onDeleteImage: () => onDeleteNetworkFile(index),
+                    readonly: readonly,
+                  );
+                }
+              },
+            ),
+          );
+        },
         child: PlaceholderContainer(
           child: isImage
               ? ImageThumbnail.file(galleryFile.file)
@@ -168,26 +171,29 @@ class ShowGallery extends StatelessWidget {
 
     return Container(
       child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              if (isImage) {
-                return FullScreenImage.file(
-                  files[index].file,
-                  onDeleteImage: () => onDeleteMemoryFile(index),
-                  readonly: readonly,
-                );
-              } else {
-                return FullScreenFile(
-                  fileicon: relative(FileIcons.getFileIcon(ext)),
-                  filename: galleryFile.filename,
-                  onDeleteImage: () => onDeleteMemoryFile(index),
-                  readonly: readonly,
-                );
-              }
-            },
-          ),
-        ),
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          return Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                if (isImage) {
+                  return FullScreenImage.file(
+                    files[index].file,
+                    onDeleteImage: () => onDeleteMemoryFile(index),
+                    readonly: readonly,
+                  );
+                } else {
+                  return FullScreenFile(
+                    fileicon: relative(FileIcons.getFileIcon(ext)),
+                    filename: galleryFile.filename,
+                    onDeleteImage: () => onDeleteMemoryFile(index),
+                    readonly: readonly,
+                  );
+                }
+              },
+            ),
+          );
+        },
         child: PlaceholderContainer(
           child: isImage
               ? ImageThumbnail.file(galleryFile.file)
