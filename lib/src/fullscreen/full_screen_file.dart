@@ -38,7 +38,7 @@ class FullScreenFile extends StatelessWidget {
                 child: Text(
                   filename,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
               ),
             ),

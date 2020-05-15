@@ -64,9 +64,10 @@ class FullScreenImage extends StatelessWidget {
   }
 
   IconButton _buildBackButton(BuildContext context) {
+    bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return IconButton(
       icon: Icon(
-        Icons.arrow_back,
+        isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
         color: Colors.white,
       ),
       onPressed: () => Navigator.of(context).pop(),
@@ -84,7 +85,7 @@ class FullScreenImage extends StatelessWidget {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text(
-                    'Are you sure you want to delete this file from the inspection?'),
+                    'Are you sure you want to delete this item?'),
                 actions: <Widget>[
                   FlatButton(
                     onPressed: () => Navigator.of(context).pop(false),
