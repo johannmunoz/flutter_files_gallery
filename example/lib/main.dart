@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
       id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FBDChzI4lP4t3zv4ek4Fx%2F2020-03-18T17%3A08%3A12.737192.jpg?alt=media&token=3a85f41a-1a30-415d-8799-f1702ce8c8cf',
       imageurl: 'https://homepages.cae.wisc.edu/~ece533/images/arctichare.png',
       fileicon: '/assets/fileicons/image.svg',
-      value: ValueItem(name: 'test-image.png'),
+      value: ValueItem(name: 'test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-test-image-.png'),
     ),
     FileItem(
       id: 'https://firebasestorage.googleapis.com/v0/b/comm-unstable-fmlink/o/buildings%2F7Vs4BC4sfPFtbJPUyGCY%2Finspection_events%2FtYZGuhTvv6lWZJNoRTwv%2F2020-04-03T13%3A35%3A28.681523.jpg?alt=media&token=012ac266-6e1d-4467-b006-24cb36b3bf0d',
@@ -91,6 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Container(
               child: ShowGallery(
+                hasDelete: true,
+                hasRename: true,
                 urls: urls
                     .map(
                       (item) => GalleryUrl(

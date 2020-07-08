@@ -126,7 +126,6 @@ class ShowGallery extends StatelessWidget {
                   onDeleteImage: () => onDeleteNetworkFile(index),
                   onRenameImage: (filename) => onRenameNetworkFile(filename),
                   filename: galleryFile.filename,
-                  readonly: readonly,
                 );
               } else {
                 return FullScreenFile(
@@ -167,7 +166,6 @@ class ShowGallery extends StatelessWidget {
                   filename: galleryFile.filename,
                   onDeleteImage: () => onDeleteMemoryFile(index),
                   onRenameImage: (filename) => onRenameMemoryFile(filename),
-                  readonly: readonly,
                 );
               } else {
                 return FullScreenFile(

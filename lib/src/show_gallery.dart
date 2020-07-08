@@ -18,7 +18,8 @@ class ShowGallery extends StatelessWidget {
   final OnRemoveNetworkFile onDeleteNetworkFile;
   final OnRenameMemoryFile onRenameMemoryFile;
   final OnRenameNetworkFile onRenameNetworkFile;
-  final bool readonly;
+  final bool hasDelete;
+  final bool hasRename;
 
   const ShowGallery({
     Key key,
@@ -28,7 +29,8 @@ class ShowGallery extends StatelessWidget {
     this.onDeleteNetworkFile,
     this.onRenameMemoryFile,
     this.onRenameNetworkFile,
-    this.readonly = false,
+    this.hasDelete = false,
+    this.hasRename = false,
   }) : super(key: key);
 
   @override
@@ -147,14 +149,15 @@ class ShowGallery extends StatelessWidget {
                     onDeleteImage: () => onDeleteNetworkFile(index),
                     onRenameImage: (filename) =>
                         onRenameNetworkFile(index, filename),
-                    readonly: readonly,
+                    hasDelete: hasDelete,
+                    hasRename: hasRename,
                   );
                 } else {
                   return FullScreenFile(
                     fileicon: FileIcons.getFileIcon(ext),
                     filename: galleryFile.filename,
                     onDeleteImage: () => onDeleteNetworkFile(index),
-                    readonly: readonly,
+                    readonly: hasDelete,
                   );
                 }
               },
@@ -192,14 +195,15 @@ class ShowGallery extends StatelessWidget {
                     onDeleteImage: () => onDeleteMemoryFile(index),
                     onRenameImage: (filename) =>
                         onRenameMemoryFile(index, filename),
-                    readonly: readonly,
+                    hasDelete: hasDelete,
+                    hasRename: hasRename,
                   );
                 } else {
                   return FullScreenFile(
                     fileicon: relative(FileIcons.getFileIcon(ext)),
                     filename: galleryFile.filename,
                     onDeleteImage: () => onDeleteMemoryFile(index),
-                    readonly: readonly,
+                    readonly: hasDelete,
                   );
                 }
               },

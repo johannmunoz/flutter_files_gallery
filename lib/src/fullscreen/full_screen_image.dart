@@ -6,14 +6,16 @@ class FullScreenImage extends StatefulWidget {
   final ImageProvider image;
   final VoidCallback onDeleteImage;
   final OnRenameImage onRenameImage;
-  final bool readonly;
+  final bool hasDelete;
+  final bool hasRename;
   final String filename;
 
   FullScreenImage.file(
     File file, {
     @required this.onDeleteImage,
     @required this.filename,
-    this.readonly = false,
+    this.hasDelete = false,
+    this.hasRename = false,
     this.onRenameImage,
     Key key,
   })  : image = FileImage(file),
@@ -23,7 +25,8 @@ class FullScreenImage extends StatefulWidget {
     String src, {
     @required this.onDeleteImage,
     @required this.filename,
-    this.readonly = false,
+    this.hasDelete = false,
+    this.hasRename = false,
     this.onRenameImage,
     Key key,
   })  : image = NetworkImage(src),
@@ -33,7 +36,8 @@ class FullScreenImage extends StatefulWidget {
     this.image, {
     @required this.onDeleteImage,
     @required this.filename,
-    this.readonly = false,
+    this.hasDelete = false,
+    this.hasRename = false,
     this.onRenameImage,
     Key key,
   }) : super(key: key);
@@ -68,13 +72,18 @@ class _FullScreenImageState extends State<FullScreenImage> {
                 color: Colors.white10,
                 padding: EdgeInsets.symmetric(vertical: 8.0),
                 width: double.infinity,
-                child: Text(
-                  filename,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      .apply(color: Colors.white54),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                    filename,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .apply(color: Colors.white54),
+                  ),
                 ),
               ),
             ),
@@ -88,12 +97,11 @@ class _FullScreenImageState extends State<FullScreenImage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _buildBackButton(context),
-                    if (!widget.readonly)
+                    if (widget.hasRename || widget.hasDelete)
                       Row(
                         children: <Widget>[
-                          if (widget.onRenameImage != null)
-                            _buildRenameButton(context),
-                          _buildDeleteButton(context),
+                          if (widget.hasRename) _buildRenameButton(context),
+                          if (widget.hasDelete) _buildDeleteButton(context),
                         ],
                       ),
                   ],
@@ -183,6 +191,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
             false;
 
         if (result) {
+          if (textController.text.isEmpty) return;
           final ext = extension(widget.filename);
           setState(() => filename = '${textController.text}$ext');
           widget.onRenameImage(filename);
