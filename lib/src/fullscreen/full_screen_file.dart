@@ -52,7 +52,7 @@ class FullScreenFile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     _buildBackButton(context),
-                    if (!readonly) _buildDeleteButton(context),
+                    if (readonly) _buildDeleteButton(context),
                   ],
                 ),
               ),

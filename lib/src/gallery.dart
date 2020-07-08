@@ -9,11 +9,15 @@ import 'package:files_gallery/src/thumbnails_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
+import 'helpers/file_helper.dart';
+
 class ShowGallery extends StatelessWidget {
   final List<GalleryFile> files;
   final List<GalleryUrl> urls;
   final OnRemoveMemoryFile onDeleteMemoryFile;
   final OnRemoveNetworkFile onDeleteNetworkFile;
+  final OnRenameMemoryFile onRenameMemoryFile;
+  final OnRenameNetworkFile onRenameNetworkFile;
   final bool readonly;
 
   const ShowGallery({
@@ -22,6 +26,8 @@ class ShowGallery extends StatelessWidget {
     this.urls,
     this.onDeleteMemoryFile,
     this.onDeleteNetworkFile,
+    this.onRenameMemoryFile,
+    this.onRenameNetworkFile,
     this.readonly = false,
   }) : super(key: key);
 
@@ -107,7 +113,7 @@ class ShowGallery extends StatelessWidget {
   Widget _buildNetworkMap(
       BuildContext context, GalleryFile galleryFile, int index) {
     final ext = extension(galleryFile.filename);
-    final isImage = _checkIfIsImage(ext);
+    final isImage = checkIfIsImage(ext);
 
     return Container(
       child: GestureDetector(
@@ -118,7 +124,8 @@ class ShowGallery extends StatelessWidget {
                 return FullScreenImage.file(
                   galleryFile.original,
                   onDeleteImage: () => onDeleteNetworkFile(index),
-                  readonly: readonly,
+                  onRenameImage: (filename) => onRenameNetworkFile(filename),
+                  filename: galleryFile.filename,
                 );
               } else {
                 return FullScreenFile(
@@ -146,7 +153,7 @@ class ShowGallery extends StatelessWidget {
   Widget _buildMemoryMap(
       BuildContext context, GalleryFile galleryFile, int index) {
     final ext = extension(galleryFile.filename);
-    final isImage = _checkIfIsImage(ext);
+    final isImage = checkIfIsImage(ext);
 
     return Container(
       child: GestureDetector(
@@ -156,8 +163,9 @@ class ShowGallery extends StatelessWidget {
               if (isImage) {
                 return FullScreenImage.file(
                   files[index].file,
+                  filename: galleryFile.filename,
                   onDeleteImage: () => onDeleteMemoryFile(index),
-                  readonly: readonly,
+                  onRenameImage: (filename) => onRenameMemoryFile(filename),
                 );
               } else {
                 return FullScreenFile(
@@ -181,18 +189,9 @@ class ShowGallery extends StatelessWidget {
       ),
     );
   }
-
-  bool _checkIfIsImage(String ext) {
-    switch (ext) {
-      case '.png':
-      case '.jpeg':
-      case '.jpg':
-        return true;
-      default:
-        return false;
-    }
-  }
 }
 
 typedef void OnRemoveMemoryFile(int indexFile);
 typedef void OnRemoveNetworkFile(int indexFile);
+typedef void OnRenameMemoryFile(String filename);
+typedef void OnRenameNetworkFile(String filename);

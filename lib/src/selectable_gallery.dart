@@ -8,6 +8,8 @@ import 'package:files_gallery/src/thumbnails/file_thumbnail.dart';
 import 'package:files_gallery/src/thumbnails/image_thumbnail.dart';
 import 'package:files_gallery/src/thumbnails_manager.dart';
 
+import 'helpers/file_helper.dart';
+
 class SelectableGallery extends StatefulWidget {
   final List<GalleryFile> files;
   final List<GalleryUrl> urls;
@@ -165,7 +167,7 @@ class _SelectableGalleryState extends State<SelectableGallery> {
   Widget _buildNetworkMap(
       BuildContext context, GalleryFile galleryFile, int index) {
     final ext = extension(galleryFile.filename);
-    final isImage = _checkIfIsImage(ext);
+    final isImage = checkIfIsImage(ext);
 
     return Container(
       child: AnimatedSelectableContainer(
@@ -191,7 +193,7 @@ class _SelectableGalleryState extends State<SelectableGallery> {
       galleryFile = GalleryFile(filename: 'file.file');
     }
     final ext = extension(galleryFile.filename);
-    final isImage = _checkIfIsImage(ext);
+    final isImage = checkIfIsImage(ext);
 
     return Container(
       child: AnimatedSelectableContainer(
@@ -234,17 +236,6 @@ class _SelectableGalleryState extends State<SelectableGallery> {
     listSelectedFiles.sort();
     if (widget.reverse) {
       listSelectedFiles = listSelectedFiles.reversed.toList();
-    }
-  }
-
-  bool _checkIfIsImage(String ext) {
-    switch (ext) {
-      case '.png':
-      case '.jpeg':
-      case '.jpg':
-        return true;
-      default:
-        return false;
     }
   }
 }
