@@ -99,8 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     )
                     .toList(),
-                onDeleteNetworkFile: (index) =>
-                    setState(() => urls.removeAt(index)),
+                onDeleteNetworkFile: (index) => setState(
+                  () => urls.removeAt(index),
+                ),
+                onRenameNetworkFile: (index, filename) =>
+                    print('${urls[index].value.name} -> $filename'),
               ),
             ),
             Divider(
