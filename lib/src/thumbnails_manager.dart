@@ -11,11 +11,16 @@ class ThumbnailsManager {
   Future<GalleryFile> getNetworkThumbnail(GalleryUrl urlItem) async {
     urlItem = _checkNullNetworkItem(urlItem);
 
-    if (!_checkIfIsImage(extension(urlItem.filename))) {
+    final fileBasename = basenameWithoutExtension(urlItem.filename);
+    final fileExtension = extension(urlItem.url).split('?').first;
+
+    final filename = fileBasename + fileExtension;
+
+    if (!_checkIfIsImage(extension(filename))) {
       Directory dir = await getTemporaryDirectory();
-      final pathDestiny = join(dir.path, 'thumbnails', urlItem.filename);
+      final pathDestiny = join(dir.path, 'thumbnails', filename);
       final file = File(pathDestiny);
-      return GalleryFile(file: file, filename: urlItem.filename);
+      return GalleryFile(file: file, filename: filename);
     }
 
     final hashUrl = _getHashUrl(urlItem.url + '_thumbnail');
@@ -28,7 +33,7 @@ class ThumbnailsManager {
 
       return GalleryFile(
         file: thumbFile,
-        filename: urlItem.filename,
+        filename: filename,
         original: originalFile,
       );
     }
@@ -40,7 +45,7 @@ class ThumbnailsManager {
     thumbFile = await _saveFileToCache(fileBytes, urlItem.url);
     return GalleryFile(
       file: thumbFile,
-      filename: urlItem.filename,
+      filename: filename,
       original: file,
     );
   }
@@ -198,10 +203,39 @@ class ThumbnailsManager {
   }
 
   bool _checkIfIsImage(String ext) {
-    switch (ext) {
+    switch (ext.toLowerCase()) {
       case '.png':
       case '.jpeg':
       case '.jpg':
+      case '.gif':
+      case '.svg':
+      case '.ico':
+      case '.tif':
+      case '.tiff':
+      case '.psd':
+      case '.psb':
+      case '.ami':
+      case '.apx':
+      case '.bmp':
+      case '.bpg':
+      case '.brk':
+      case '.cur':
+      case '.dds':
+      case '.dng':
+      case '.exr':
+      case '.fpx':
+      case '.gbr':
+      case '.img':
+      case '.jbig2':
+      case '.jb2':
+      case '.jng':
+      case '.jxr':
+      case '.pbm':
+      case '.pgf':
+      case '.pic':
+      case '.raw':
+      case '.webp':
+      case '.eps':
         return true;
       default:
         return false;
