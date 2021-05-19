@@ -11,10 +11,13 @@ class ThumbnailsManager {
   Future<GalleryFile> getNetworkThumbnail(GalleryUrl urlItem) async {
     urlItem = _checkNullNetworkItem(urlItem);
 
-    final fileBasename = basenameWithoutExtension(urlItem.filename);
-    final fileExtension = extension(urlItem.url).split('?').first;
+    final filenameBasename = basenameWithoutExtension(urlItem.filename);
+    final filenameExtension = extension(urlItem.filename);
+    final fileExtension = filenameExtension.isEmpty
+        ? extension(urlItem.url).split('?').first
+        : filenameExtension;
 
-    final filename = fileBasename + fileExtension;
+    final filename = filenameBasename + fileExtension;
 
     if (!_checkIfIsImage(extension(filename))) {
       Directory dir = await getTemporaryDirectory();
