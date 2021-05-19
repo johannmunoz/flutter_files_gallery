@@ -1,4 +1,4 @@
-# resvu/flutter-files-gallery
+# flutter-files-gallery
 
 ## Get started
 
