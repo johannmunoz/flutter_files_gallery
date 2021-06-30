@@ -1,4 +1,4 @@
-# flutter-files-gallery
+# flutter_files_gallery
 
 ## Get started
 
