@@ -1,8 +1,7 @@
 name: files_gallery
 description: Display galleries in flutter.
 version: 0.0.1
-author:
-homepage: https://github.com/resvu/flutter-files-gallery
+homepage: https://github.com/resvu/flutter_files_gallery
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
