@@ -28,11 +28,10 @@ class ThumbnailsManager {
 
     final hashUrl = _getHashUrl(urlItem.url + '_thumbnail');
 
-    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+    File thumbFile = await _getCacheFile(hashUrl);
 
     if (thumbFile != null) {
-      File originalFile =
-          await DefaultCacheManager().getSingleFile(urlItem.url);
+      File originalFile = await _getCacheFile(urlItem.url);
 
       return GalleryFile(
         file: thumbFile,
@@ -55,12 +54,12 @@ class ThumbnailsManager {
 
   Future<File> _getNetworkThumbnail(String url) async {
     if (!_checkIfIsImage(extension(url).split('?').first)) {
-      File thumbFile = await DefaultCacheManager().getSingleFile(url);
+      File thumbFile = await _getCacheFile(url);
       return thumbFile;
     }
     final hashUrl = _getHashUrl(url + '_thumbnail');
 
-    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+    File thumbFile = await _getCacheFile(hashUrl);
 
     if (thumbFile != null) {
       return thumbFile;
@@ -86,7 +85,7 @@ class ThumbnailsManager {
     }
     final hashUrl = _getHashUrl(fileItem.file.path + '_thumbnail');
 
-    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+    File thumbFile = await _getCacheFile(hashUrl);
 
     if (thumbFile != null) {
       return GalleryFile(
@@ -116,7 +115,7 @@ class ThumbnailsManager {
     }
     final hashUrl = _getHashUrl(fileItem.path + '_thumbnail');
 
-    File thumbFile = await DefaultCacheManager().getSingleFile(hashUrl);
+    File thumbFile = await _getCacheFile(hashUrl);
 
     if (thumbFile != null) {
       return thumbFile;
@@ -130,7 +129,7 @@ class ThumbnailsManager {
   }
 
   Future<File> _downloadFileToCache(String url) async {
-    return await DefaultCacheManager().getSingleFile(url);
+    return await _getCacheFile(url);
   }
 
   Future<List<int>> _getResizedFile(File file) async {
@@ -203,6 +202,15 @@ class ThumbnailsManager {
     }
 
     return fileItem;
+  }
+
+  Future<File> _getCacheFile(String url) async {
+    try {
+      final thumbFile = await DefaultCacheManager().getSingleFile(url);
+      return thumbFile;
+    } catch (e) {
+      return null;
+    }
   }
 
   bool _checkIfIsImage(String ext) {
